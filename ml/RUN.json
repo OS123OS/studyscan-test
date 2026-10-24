@@ -1,0 +1,6 @@
+{
+  "minutes": 8,
+  "configs": [
+    {"name": "s", "widths": "16,24,40,64,96", "dec": 32}
+  ]
+}
