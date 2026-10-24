@@ -1,0 +1,8 @@
+ambientCG Links: 94 15 s
+Texturen: ambientCG 94, Poly Haven 80
+SmartDoc (Übung, Prüfung): (4502, 1324)
+4.0K	data/prep_log.txt
+17M	data/real_eval
+54M	data/real_train
+47M	data/textures
+174
