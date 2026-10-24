@@ -33,7 +33,7 @@ E-Mail: [BITTE AUSFÜLLEN: Kontakt-E-Mail]
 
 ## 4. KI-Funktionen
 
-Wenn du die KI nutzt (Zusammenfassung, Lernkarten, Quiz, Chat), wird der **erkannte Text des Dokuments** und deine **Frage** an die KI von **OpenAI** (OpenAI Ireland Ltd., Irland / OpenAI, L.L.C., USA) gesendet. Die Bilder selbst werden nicht gesendet. Die Antworten erstellt eine KI, kein Mensch. Sie können Fehler enthalten.
+Wenn du die KI nutzt (Zusammenfassung, Lernkarten, Quiz, Chat), wird der **erkannte Text des Dokuments** und deine **Frage** an die KI von **OpenAI** (OpenAI Ireland Ltd., Irland / OpenAI, L.L.C., USA) gesendet. Die Bilder selbst werden normalerweise nicht gesendet. **Ausnahme (nur Premium):** Hat die Texterkennung auf einer Seite kaum Text gefunden (z. B. Handschrift oder eine Zeichnung), wird für diese Seite eine verkleinerte Kopie des **Fotos** an OpenAI gesendet, damit die KI aufschreibt, was darauf zu sehen ist. Das passiert nur, wenn du selbst eine KI-Funktion für diesen Scan startest. Die Antworten erstellt eine KI, kein Mensch. Sie können Fehler enthalten.
 
 - OpenAI verwendet diese Daten **nicht zum Training** seiner KI.
 - OpenAI speichert die Anfragen höchstens 30 Tage, um Missbrauch zu erkennen, und löscht sie dann.
