@@ -11,9 +11,11 @@ on:
 permissions:
   contents: write
 
+# Ein neuer Push wartet, bis der laufende Lauf fertig ist (ein langes
+# Training wird nicht abgebrochen).
 concurrency:
   group: ml-training
-  cancel-in-progress: true
+  cancel-in-progress: false
 
 jobs:
   setup:
@@ -72,49 +74,43 @@ jobs:
           path: data
       - name: Trainieren
         working-directory: ml
-        run: >
-          python train.py --minutes ${{ needs.setup.outputs.minutes }}
-          --out ../out/${{ matrix.cfg.name }}
-          --textures ../data/textures --real ../data/real_train
-          --eval-real ../data/real_eval
-          --widths ${{ matrix.cfg.widths }} --dec ${{ matrix.cfg.dec }}
-          --workers 3
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: out-${{ matrix.cfg.name }}
-          path: out
-          retention-days: 7
-
-  publish:
-    needs: [train]
-    if: always()
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          path: art
+        run: |
+          set -o pipefail
+          mkdir -p ../out
+          python train.py --minutes ${{ matrix.cfg.minutes || needs.setup.outputs.minutes }} \
+            --out ../out/${{ matrix.cfg.name }} \
+            --textures ../data/textures --real ../data/real_train \
+            --eval-real ../data/real_eval \
+            --widths ${{ matrix.cfg.widths }} --dec ${{ matrix.cfg.dec }} \
+            --workers 3 2>&1 | tee ../out/console_${{ matrix.cfg.name }}.txt
       - name: Ergebnisse auf den Zweig ml-results
+        if: always()
         env:
           RUN: ${{ github.run_number }}
           SHA: ${{ github.sha }}
+          NAME: ${{ matrix.cfg.name }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git clone --depth 1 --branch ml-results "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" res \
-            || { git clone --depth 1 "https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}" res && cd res && git checkout --orphan ml-results && git rm -rq . && cd ..; }
-          mkdir -p "res/runs/$RUN"
-          for d in art/out-*; do
-            [ -d "$d" ] || continue
-            cp -r "$d"/* "res/runs/$RUN/"
+          url="https://x-access-token:${{ github.token }}@github.com/${{ github.repository }}"
+          for attempt in 1 2 3 4 5; do
+            rm -rf res
+            if ! git clone -q --depth 1 --branch ml-results "$url" res; then
+              git clone -q --depth 1 "$url" res && (cd res && git checkout -q --orphan ml-results && git rm -rqf .)
+            fi
+            mkdir -p "res/runs/$RUN"
+            cp -r out/. "res/runs/$RUN/" 2>/dev/null || true
+            cp data/prep_log.txt "res/runs/$RUN/" 2>/dev/null || true
+            find "res/runs/$RUN" -name '*.pt' -size +40M -delete || true
+            if [ ! -d res/eval_real ] && [ -d data/real_eval ]; then
+              cp -r data/real_eval res/eval_real
+            fi
+            echo "$SHA" > "res/runs/$RUN/source_sha.txt"
+            cd res
+            git add -A
+            git commit -q -m "Trainingslauf $RUN ($NAME)" || exit 0
+            if git push -q origin ml-results; then exit 0; fi
+            cd ..
+            sleep $((attempt * 7))
           done
-          find "res/runs/$RUN" -name '*.pt' -size +40M -delete || true
-          if [ ! -d res/eval_real ] && [ -d art/data/real_eval ]; then
-            cp -r art/data/real_eval res/eval_real
-          fi
-          cp art/data/prep_log.txt "res/runs/$RUN/" 2>/dev/null || true
-          echo "$SHA" > "res/runs/$RUN/source_sha.txt"
-          cd res
-          git add -A
-          git commit -q -m "Trainingslauf $RUN" || exit 0
-          git push -q origin ml-results
+          exit 1

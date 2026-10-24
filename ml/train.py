@@ -279,10 +279,13 @@ def export(net, out_dir):
                'dec': net.dec, 'layers': layers,
                'normalize': 'x/255 - 0.5'},
               open(os.path.join(out_dir, 'model.json'), 'w'), indent=1)
-    torch.onnx.export(net, torch.zeros(1, 3, SIZE, SIZE),
-                      os.path.join(out_dir, 'model.onnx'),
-                      input_names=['image'], output_names=['logits'],
-                      opset_version=13)
+    try:
+        torch.onnx.export(net, torch.zeros(1, 3, SIZE, SIZE),
+                          os.path.join(out_dir, 'model.onnx'),
+                          input_names=['image'], output_names=['logits'],
+                          opset_version=13)
+    except Exception as e:  # noqa: nur zum Nachsehen, nicht nötig
+        print('ONNX-Export ging nicht:', e, flush=True)
     # Testbild + Ausgabe für den Abgleich mit der Dart-Umsetzung.
     rng = np.random.RandomState(0)
     probe = rng.randint(0, 256, (SIZE, SIZE, 3)).astype(np.uint8)
@@ -304,8 +307,11 @@ def count_macs(net):
 
     hs = [m.register_forward_hook(hook) for m in net.modules()
           if isinstance(m, nn.Conv2d)]
+    # eval: BatchNorm mit nur einem Bild geht im Trainingsmodus nicht.
+    net.eval()
     with torch.no_grad():
         net(torch.zeros(1, 3, SIZE, SIZE))
+    net.train()
     for h in hs:
         h.remove()
     return macs
@@ -352,6 +358,11 @@ def main():
         say(f'weiter mit {args.resume}')
     params = sum(p.numel() for p in net.parameters())
     say(f'Parameter {params}, MACs {count_macs(net) / 1e6:.1f} M')
+
+    # Gleich am Anfang einmal exportieren und prüfen, damit Fehler nicht
+    # erst nach 20 Minuten auffallen.
+    export(net, os.path.join(args.out, 'check'))
+    say(f'Export-Probe ok, Prüfung {json.dumps(evaluate(net, make_val(8, args.textures)))}')
 
     real = load_real(args.real)
     say(f'echte Trainingsfotos: {len(real)}')

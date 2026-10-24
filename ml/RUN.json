@@ -1,6 +1,23 @@
 {
-  "minutes": 8,
-  "configs": [
-    {"name": "s", "widths": "16,24,40,64,96", "dec": 32}
-  ]
+ "minutes": 300,
+ "configs": [
+  {
+   "name": "t",
+   "widths": "16,24,40,64,96",
+   "dec": 32,
+   "minutes": 8
+  },
+  {
+   "name": "s",
+   "widths": "16,24,40,64,96",
+   "dec": 32,
+   "minutes": 300
+  },
+  {
+   "name": "m",
+   "widths": "24,32,48,80,128",
+   "dec": 48,
+   "minutes": 300
+  }
+ ]
 }
