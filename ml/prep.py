@@ -15,8 +15,10 @@ import os
 import random
 import sys
 import tarfile
+import time
 import urllib.request
 import zipfile
+from concurrent.futures import ThreadPoolExecutor, TimeoutError, as_completed
 
 from PIL import Image
 
@@ -42,68 +44,100 @@ def _urls(obj, pattern):
         yield obj
 
 
-def textures_ambientcg(out, per_category=18):
+# Höchstens so lange Texturen laden (der Rest des Trainings wartet).
+TEXTURE_SECONDS = 360
+
+
+def _deadline_pool(jobs, seconds):
+    """Führt jobs (Funktionen ohne Argumente) parallel aus, bis die Zeit um
+    ist. Gibt die Zahl der erfolgreichen Jobs zurück."""
+    start = time.time()
+    ok = 0
+    pool = ThreadPoolExecutor(8)
+    futures = [pool.submit(j) for j in jobs]
+    try:
+        for f in as_completed(futures, timeout=seconds):
+            try:
+                ok += 1 if f.result() else 0
+            except Exception as e:  # noqa
+                print('Fehler:', e)
+    except TimeoutError:
+        print(f'Zeit um nach {time.time() - start:.0f} s')
+    for f in futures:
+        f.cancel()
+    pool.shutdown(wait=False, cancel_futures=True)
+    return ok
+
+
+def textures_ambientcg(out, per_category=6, seconds=TEXTURE_SECONDS):
     cats = ['Wood', 'WoodFloor', 'Planks', 'Fabric', 'Carpet', 'Tiles',
             'Marble', 'Plastic', 'Leather', 'Concrete', 'Paint', 'Terrazzo',
             'Granite', 'Laminate', 'Cardboard', 'Wicker', 'Metal']
-    n = 0
+    start = time.time()
+    links = []
     for cat in cats:
+        if time.time() - start > seconds / 3:
+            break
         try:
             data = json.loads(get(
                 'https://ambientcg.com/api/v2/full_json?type=Material'
                 f'&category={cat}&limit={per_category}&include=downloadData'
-                '&sort=Popular'))
+                '&sort=Popular', timeout=30))
         except Exception as e:  # noqa
             print('ambientCG', cat, e)
             continue
         for asset in data.get('foundAssets', []):
-            links = [u for u in _urls(asset, '1K-JPG.zip')]
-            if not links:
-                aid = asset.get('assetId')
-                if aid:
-                    links = [f'https://ambientcg.com/get?file={aid}_1K-JPG.zip']
-            if not links:
-                continue
-            try:
-                z = zipfile.ZipFile(io.BytesIO(get(links[0])))
-            except Exception as e:  # noqa
-                print('ambientCG zip', links[0], e)
-                continue
+            found = [u for u in _urls(asset, '1K-JPG.zip')]
+            if not found and asset.get('assetId'):
+                found = ['https://ambientcg.com/get?file='
+                         f'{asset["assetId"]}_1K-JPG.zip']
+            if found:
+                links.append((cat, found[0]))
+    print('ambientCG Links:', len(links), f'{time.time() - start:.0f} s')
+
+    def job(k, cat, url):
+        def run():
+            z = zipfile.ZipFile(io.BytesIO(get(url, timeout=40)))
             for name in z.namelist():
                 if name.lower().endswith(('_color.jpg', '_color.png')):
                     im = Image.open(io.BytesIO(z.read(name))).convert('RGB')
-                    im.save(os.path.join(out, f'acg_{cat}_{n}.jpg'), quality=90)
-                    n += 1
-                    break
-    return n
+                    im.save(os.path.join(out, f'acg_{cat}_{k}.jpg'),
+                            quality=90)
+                    return True
+            return False
+        return run
+
+    rest = max(30, seconds - (time.time() - start))
+    return _deadline_pool([job(k, c, u) for k, (c, u) in enumerate(links)],
+                          rest)
 
 
-def textures_polyhaven(out, limit=120):
-    n = 0
+def textures_polyhaven(out, limit=80, seconds=TEXTURE_SECONDS / 2):
     try:
-        assets = json.loads(get('https://api.polyhaven.com/assets?t=textures'))
+        assets = json.loads(get('https://api.polyhaven.com/assets?t=textures',
+                                timeout=30))
     except Exception as e:  # noqa
         print('polyhaven', e)
         return 0
     keys = list(assets.keys())
     random.Random(3).shuffle(keys)
-    for key in keys:
-        if n >= limit:
-            break
-        cats = assets[key].get('categories', [])
-        if not any(c in cats for c in ('wood', 'fabric', 'floor', 'plaster',
-                                       'concrete', 'man made', 'clean')):
-            continue
-        try:
-            files = json.loads(get(f'https://api.polyhaven.com/files/{key}'))
+    keys = [k for k in keys
+            if any(c in assets[k].get('categories', [])
+                   for c in ('wood', 'fabric', 'floor', 'plaster',
+                             'concrete', 'man made', 'clean'))][:limit]
+
+    def job(key):
+        def run():
+            files = json.loads(get(f'https://api.polyhaven.com/files/{key}',
+                                   timeout=30))
             diff = files.get('Diffuse') or files.get('diff') or {}
             url = diff['1k']['jpg']['url']
-            im = Image.open(io.BytesIO(get(url))).convert('RGB')
+            im = Image.open(io.BytesIO(get(url, timeout=40))).convert('RGB')
             im.save(os.path.join(out, f'ph_{key}.jpg'), quality=90)
-            n += 1
-        except Exception as e:  # noqa
-            print('polyhaven', key, e)
-    return n
+            return True
+        return run
+
+    return _deadline_pool([job(k) for k in keys], seconds)
 
 
 def smartdoc(train_dir, eval_dir, train_step=4, eval_step=5, long_side=384):

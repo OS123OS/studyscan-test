@@ -37,10 +37,13 @@ jobs:
           python-version: '3.12'
       - run: pip install pillow==11.0.0 numpy==2.1.3
       - name: Texturen (CC0)
-        run: python ml/prep.py textures data/textures
+        run: |
+          mkdir -p data
+          python ml/prep.py textures data/textures 2>&1 | tee -a data/prep_log.txt
       - name: SmartDoc 2015 (CC BY 4.0)
-        run: python ml/prep.py smartdoc data/real_train data/real_eval
-      - run: du -sh data/*; ls data/textures | head -20; ls data/textures | wc -l
+        run: python ml/prep.py smartdoc data/real_train data/real_eval 2>&1 | tee -a data/prep_log.txt
+      - run: |
+          { du -sh data/*; ls data/textures | wc -l; } 2>&1 | tee -a data/prep_log.txt
       - uses: actions/upload-artifact@v4
         with:
           name: data
@@ -109,6 +112,7 @@ jobs:
           if [ ! -d res/eval_real ] && [ -d art/data/real_eval ]; then
             cp -r art/data/real_eval res/eval_real
           fi
+          cp art/data/prep_log.txt "res/runs/$RUN/" 2>/dev/null || true
           echo "$SHA" > "res/runs/$RUN/source_sha.txt"
           cd res
           git add -A
