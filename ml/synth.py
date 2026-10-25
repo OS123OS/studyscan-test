@@ -578,6 +578,81 @@ def _fingers(img: Image.Image, quad):
 
 
 # ---------------------------------------------------------------------------
+# Schwere Fälle (Weiß auf Weiß, Stapel, Kabel, Stifte auf dem Blatt)
+# ---------------------------------------------------------------------------
+
+
+def _light_background(w: int, h: int) -> Image.Image:
+    """Heller Tisch fast in Papierfarbe (weißer Schreibtisch, Bettlaken)."""
+    base = np.array([random.uniform(205, 250)] * 3, np.float32)
+    base += np.random.uniform(-10, 10, 3)
+    arr = np.ones((h, w, 3), np.float32) * base
+    arr += (_noise(h, w, random.uniform(2, 8))[..., None] - 0.5) * \
+        random.uniform(2, 12)
+    t = _noise(h, w, max(h, w) / random.uniform(0.7, 2))[..., None]
+    arr *= 1 - random.uniform(0, 0.15) * t
+    return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
+
+
+def _stack_below(bg: Image.Image, quad, new_page, W, H):
+    """Weitere Blätter unter dem Hauptblatt, leicht verschoben (Stapel,
+    Heft). Zur Maske gehört nur das oberste Blatt."""
+    for _ in range(random.randint(1, 2)):
+        page = new_page()
+        c = quad.mean(0)
+        ang = random.gauss(0, 0.08)
+        scale = random.uniform(0.95, 1.08)
+        shift = np.random.uniform(-0.08, 0.08, 2) * np.array([W, H])
+        cs, sn = math.cos(ang), math.sin(ang)
+        rel = (quad - c) * scale
+        q = np.stack([rel[:, 0] * cs - rel[:, 1] * sn,
+                      rel[:, 0] * sn + rel[:, 1] * cs], 1) + c + shift
+        layer = _warp_page(page, q, W, H, 0)
+        bg.paste(layer, (0, 0), layer)
+
+
+def _cables(img: Image.Image):
+    """Dunkle Kabel quer durchs Bild (auch über das Blatt)."""
+    w, h = img.size
+    d = ImageDraw.Draw(img)
+    for _ in range(random.randint(1, 2)):
+        pts = [(random.uniform(-0.1, 1.1) * w, random.uniform(-0.1, 1.1) * h)
+               for _ in range(4)]
+        line = []
+        for t in np.linspace(0, 1, 40):
+            a = [(1 - t) ** 3, 3 * (1 - t) ** 2 * t, 3 * (1 - t) * t ** 2,
+                 t ** 3]
+            line.append((sum(a[i] * pts[i][0] for i in range(4)),
+                         sum(a[i] * pts[i][1] for i in range(4))))
+        g = random.randint(10, 70)
+        d.line(line, fill=(g, g, g + 5), width=random.randint(2, 6),
+               joint='curve')
+
+
+def _things_on_page(img: Image.Image, quad):
+    """Stift, Textmarker oder Lineal liegt auf dem Blatt (über der Kante)."""
+    d = ImageDraw.Draw(img)
+    size = max(img.size)
+    for _ in range(random.randint(1, 2)):
+        i = random.randint(0, 3)
+        t = random.uniform(0.15, 0.85)
+        p = quad[i] + (quad[(i + 1) % 4] - quad[i]) * t
+        c = quad.mean(0)
+        p = p + (c - p) * random.uniform(-0.2, 0.5)
+        ang = random.uniform(0, math.pi)
+        L = random.uniform(0.12, 0.3) * size
+        W = random.uniform(0.012, 0.03) * size
+        cs, sn = math.cos(ang), math.sin(ang)
+        pts = [(p[0] + dx * cs - dy * sn, p[1] + dx * sn + dy * cs)
+               for dx, dy in ((-L / 2, -W / 2), (L / 2, -W / 2),
+                              (L / 2, W / 2), (-L / 2, W / 2))]
+        col = random.choice([(20, 20, 25), (230, 230, 40), (40, 90, 200),
+                             (200, 40, 40), (240, 240, 240),
+                             tuple(np.random.randint(0, 255, 3).tolist())])
+        d.polygon(pts, fill=col)
+
+
+# ---------------------------------------------------------------------------
 # Ein Beispiel
 # ---------------------------------------------------------------------------
 
@@ -585,7 +660,7 @@ def _fingers(img: Image.Image, quad):
 class Generator:
     def __init__(self, size: int = 192, out_scale: int = 2,
                  textures: str | None = None, page_pool: int = 200,
-                 render: float = 1.5):
+                 render: float = 1.5, hard: float | None = None):
         """size: Eingangsgröße (quadratisch), out_scale: Ziel ist size/out_scale.
 
         render: interne Überabtastung (Bild wird größer erzeugt und dann
@@ -597,6 +672,11 @@ class Generator:
         self.textures = Textures(textures)
         self.pool: list[Image.Image] = []
         self.pool_size = page_pool
+        # Anteil schwerer Fälle (weiß auf weiß, Stapel, Kabel, Stifte auf
+        # dem Blatt); Standard aus der Umgebung, damit das Training ihn
+        # ohne neue Parameter setzen kann.
+        self.hard = float(os.environ.get('SYNTH_HARD', '0')) \
+            if hard is None else hard
 
     def _page(self):
         if len(self.pool) < self.pool_size or random.random() < 0.05:
@@ -623,9 +703,14 @@ class Generator:
         W = int(base * (ar if ar > 1 else 1) * random.uniform(1.0, 1.2))
         H = int(W / ar)
         no_doc = random.random() < 0.04
-        tex = self.textures.sample(W, H) if random.random() < 0.6 else None
-        bg = tex or procedural_background(W // 2, H // 2).resize(
-            (W, H), Image.BILINEAR)
+        hard = random.random() < self.hard
+        white = hard and random.random() < 0.45
+        if white:
+            bg = _light_background(W, H)
+        else:
+            tex = self.textures.sample(W, H) if random.random() < 0.6 else None
+            bg = tex or procedural_background(W // 2, H // 2).resize(
+                (W, H), Image.BILINEAR)
         quad = None
         if not no_doc:
             page = self._page()
@@ -633,6 +718,8 @@ class Generator:
             quad = _random_quad(W, H, aspect, cut_ok=random.random() < 0.2)
         if quad is not None:
             _clutter(bg, quad)
+            if hard and random.random() < 0.4:
+                _stack_below(bg, quad, self._page, W, H)
             bend = random.uniform(0, 0.02) if random.random() < 0.3 else 0
             layer = _warp_page(page, quad, W, H, bend)
             # Leichter Schlagschatten unter dem Blatt (Papierdicke).
@@ -648,6 +735,10 @@ class Generator:
             bg.paste(layer, (0, 0), layer)
             if random.random() < 0.12:
                 _fingers(bg, quad)
+            if hard and random.random() < 0.4:
+                _cables(bg)
+            if hard and random.random() < 0.4:
+                _things_on_page(bg, quad)
         else:
             _clutter(bg, None)
         img = bg.resize((self.size, self.size), Image.BILINEAR)

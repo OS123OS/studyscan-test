@@ -72,12 +72,22 @@ jobs:
         with:
           name: data
           path: data
+      - name: Startgewichte aus einem früheren Lauf
+        if: matrix.cfg.resume
+        run: |
+          git fetch -q --depth 1 origin ml-results
+          git show "origin/ml-results:${{ matrix.cfg.resume }}" > init.pt
+          ls -l init.pt
       - name: Trainieren
         working-directory: ml
+        env:
+          SYNTH_HARD: ${{ matrix.cfg.hard || '0' }}
         run: |
           set -o pipefail
           mkdir -p ../out
           python train.py --minutes ${{ matrix.cfg.minutes || needs.setup.outputs.minutes }} \
+            ${{ matrix.cfg.resume && '--resume ../init.pt' || '' }} \
+            --lr ${{ matrix.cfg.lr || '0.003' }} \
             --out ../out/${{ matrix.cfg.name }} \
             --textures ../data/textures --real ../data/real_train \
             --eval-real ../data/real_eval \

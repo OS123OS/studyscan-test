@@ -1,23 +1,14 @@
 {
- "minutes": 300,
+ "minutes": 150,
  "configs": [
   {
-   "name": "t",
+   "name": "s2",
    "widths": "16,24,40,64,96",
    "dec": 32,
-   "minutes": 8
-  },
-  {
-   "name": "s",
-   "widths": "16,24,40,64,96",
-   "dec": 32,
-   "minutes": 300
-  },
-  {
-   "name": "m",
-   "widths": "24,32,48,80,128",
-   "dec": 48,
-   "minutes": 300
+   "minutes": 150,
+   "resume": "runs/3/s/best.pt",
+   "lr": 0.001,
+   "hard": 0.35
   }
  ]
 }
