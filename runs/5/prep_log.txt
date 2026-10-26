@@ -1,0 +1,9 @@
+ambientCG Links: 94 16 s
+Fehler: The read operation timed out
+Texturen: ambientCG 93, Poly Haven 80
+SmartDoc (Übung, Prüfung): (4502, 1324)
+4.0K	data/prep_log.txt
+17M	data/real_eval
+54M	data/real_train
+47M	data/textures
+173
