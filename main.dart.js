@@ -167623,7 +167623,7 @@ n=t.p
 return A.bS(m,A.ba(A.b([o,B.d6,A.bB(A.b7(A.b([p,B.lJ,A.Q(k,m,m,m,m,A.ag(m,m,l.w,m,m,m,m,m,m,m,m,13,m,m,m,m,m,!0,m,m,m,m,m,m,m,m),m,m,m)],n),B.a2,B.f,B.j,m),1)],n),B.o,B.f,B.j,0,m),B.q,m,m,new A.bp(l.b,m,r,q,m,m,B.L),m,m,m,B.eT,m,m,m)}}
 A.ams.prototype={
 D(a){var s=null,r=A.b_(a),q=t.p,p=A.b([A.v1(A.dl(B.adN,s,s,s,s,s,s,s,s,s,"StudyScan"),s,s,A.ag(s,s,r.f,s,s,s,s,s,"Instrument Serif",s,s,22,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),s)],q)
-B.c.L(p,A.b([B.d8,A.Q("Version vom 25.10.2026 23:44",s,s,s,s,A.ag(s,s,r.w,s,s,s,s,s,s,s,s,12,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),s,s,s)],q))
+B.c.L(p,A.b([B.d8,A.Q("Version vom 26.10.2026 02:01",s,s,s,s,A.ag(s,s,r.w,s,s,s,s,s,s,s,s,12,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),s,s,s)],q))
 return A.b7(p,B.o,B.f,B.j,s)}}
 A.aae.prototype={
 ig(a,b){var s,r,q=null,p=b.Z($.zx(),t.ux).gq()
