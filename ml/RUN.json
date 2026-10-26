@@ -2,13 +2,13 @@
  "minutes": 150,
  "configs": [
   {
-   "name": "s2",
+   "name": "s3",
    "widths": "16,24,40,64,96",
    "dec": 32,
    "minutes": 150,
-   "resume": "runs/3/s/best.pt",
-   "lr": 0.001,
-   "hard": 0.35
+   "resume": "runs/4/s2/best.pt",
+   "lr": 0.0007,
+   "hard": 0.5
   }
  ]
 }
