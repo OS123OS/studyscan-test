@@ -2,3 +2,7 @@ tesseract.js 6.0.1
 tesseract.js-core 6.1.2
 lang deu: npm @tesseract.js-data/deu 1.0.0 (data_deu/package/4.0.0_best_int/deu.traineddata.gz)
 lang eng: npm @tesseract.js-data/eng 1.0.0 (data_eng/package/4.0.0_best_int/eng.traineddata.gz)
+lang ita: npm @tesseract.js-data/ita 1.0.0 (data_ita/package/4.0.0_best_int/ita.traineddata.gz)
+lang fra: npm @tesseract.js-data/fra 1.0.0 (data_fra/package/4.0.0_best_int/fra.traineddata.gz)
+lang spa: npm @tesseract.js-data/spa 1.0.0 (data_spa/package/4.0.0_best_int/spa.traineddata.gz)
+lang lat: npm @tesseract.js-data/lat 1.0.0 (data_lat/package/4.0.0_best_int/lat.traineddata.gz)
