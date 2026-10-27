@@ -88,6 +88,7 @@ jobs:
           python train.py --minutes ${{ matrix.cfg.minutes || needs.setup.outputs.minutes }} \
             ${{ matrix.cfg.resume && '--resume ../init.pt' || '' }} \
             --lr ${{ matrix.cfg.lr || '0.003' }} \
+            --real-frac ${{ matrix.cfg.real_frac || '0.25' }} \
             --out ../out/${{ matrix.cfg.name }} \
             --textures ../data/textures --real ../data/real_train \
             --eval-real ../data/real_eval \
