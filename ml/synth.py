@@ -114,12 +114,29 @@ def _scribble(d, x0, y0, x1, y1, colour, width):
         y += step * random.uniform(0.9, 1.3)
 
 
+def _photo_block(bw: int, bh: int) -> Image.Image:
+    """Dunkles Foto (Nacht, Wald, Weltall) mit hellen, weichen Flecken."""
+    bw, bh = max(1, int(bw)), max(1, int(bh))
+    base = np.random.randint(5, 70, 3).astype(np.float32)
+    tint = np.random.randint(0, 60, 3).astype(np.float32)
+    yy, xx = np.mgrid[0:bh, 0:bw].astype(np.float32)
+    grad = (yy / max(1, bh - 1))[..., None]
+    arr = base + tint * grad + np.zeros((bh, bw, 3), np.float32)
+    for _ in range(random.randint(2, 7)):
+        cx, cy = random.uniform(0, bw), random.uniform(0, bh)
+        r = random.uniform(0.05, 0.25) * max(bw, bh)
+        glow = np.exp(-((xx - cx) ** 2 + (yy - cy) ** 2) / (2 * r * r))
+        arr += glow[..., None] * np.random.randint(30, 140, 3)
+    arr += np.random.normal(0, 6, arr.shape)
+    return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
+
+
 def render_page(long_side: int = 640) -> Image.Image:
     """Ein Blatt in Draufsicht (ohne Perspektive)."""
     kind = random.choices(
         ['text', 'lined', 'grid', 'worksheet', 'magazine', 'note', 'receipt',
          'blank'],
-        weights=[30, 16, 16, 14, 12, 4, 3, 5])[0]
+        weights=[30, 16, 16, 14, 18, 4, 3, 5])[0]
     if kind == 'receipt':
         aspect = random.uniform(2.2, 3.5)
     elif kind == 'note':
@@ -141,6 +158,15 @@ def render_page(long_side: int = 640) -> Image.Image:
 
     if kind == 'text':
         y = m
+        if random.random() < 0.2:
+            # Dunkle Kopfzeile (Arbeitsblatt, Lernkontrolle) mit heller Schrift.
+            bh = int(h * random.uniform(0.08, 0.2))
+            top = 0 if random.random() < 0.5 else m
+            img.paste(_photo_block(w if top == 0 else w - 2 * m, bh),
+                      (0 if top == 0 else m, top))
+            _text_lines(d, m * 1.2, top + bh * 0.55, w * 0.7, top + bh * 0.9,
+                        int(s * 1.3), (235, 235, 235), ragged=False)
+            y = top + bh + s
         if random.random() < 0.7:
             y = _text_lines(d, m, y, w - m, y + s * 3, int(s * 1.8), ink,
                             ragged=False) + s
@@ -210,24 +236,45 @@ def render_page(long_side: int = 640) -> Image.Image:
             n += 1
     elif kind == 'magazine':
         # Bilder bis an den Rand: schwere Fälle (Rand des Blatts = Rand des Bilds)
-        y = 0 if random.random() < 0.5 else m
-        while y < h - m:
-            if random.random() < 0.45:
-                bh = int(h * random.uniform(0.15, 0.4))
-                x0 = 0 if random.random() < 0.4 else m
-                x1 = w if random.random() < 0.4 else w - m
-                a = np.random.randint(20, 235, 3)
-                b = np.random.randint(20, 235, 3)
-                grad = np.linspace(0, 1, max(1, bh))[:, None, None]
-                block = (a * (1 - grad) + b * grad)
-                block = np.repeat(block, max(1, x1 - x0), axis=1)
-                block += np.random.normal(0, 12, block.shape)
-                img.paste(Image.fromarray(np.clip(block, 0, 255).astype(np.uint8)),
-                          (int(x0), int(y)))
-                y += bh + s
-            else:
-                y = _text_lines(d, m, y, w - m, y + s * random.randint(3, 10),
+        if random.random() < 0.4:
+            # Dunkles Foto als Spalte an einer Seite, daneben Text.
+            bw = int(w * random.uniform(0.25, 0.5))
+            left = random.random() < 0.5
+            x0 = (0 if random.random() < 0.4 else m) if left else w - m - bw
+            if not left and random.random() < 0.4:
+                x0 = w - bw
+            y0 = 0 if random.random() < 0.3 else m
+            y1 = h if random.random() < 0.3 else h - m
+            img.paste(_photo_block(bw, y1 - y0), (int(x0), int(y0)))
+            tx0, tx1 = (x0 + bw + s, w - m) if left else (m, x0 - s)
+            y = m
+            while y < h - m - s * 3 and tx1 - tx0 > s * 4:
+                y = _text_lines(d, tx0, y, tx1, y + s * random.randint(3, 10),
                                 s, ink) + s
+        else:
+            y = 0 if random.random() < 0.5 else m
+            while y < h - m:
+                if random.random() < 0.45:
+                    bh = int(h * random.uniform(0.15, 0.4))
+                    x0 = 0 if random.random() < 0.4 else m
+                    x1 = w if random.random() < 0.4 else w - m
+                    if random.random() < 0.4:
+                        img.paste(_photo_block(max(1, x1 - x0), bh),
+                                  (int(x0), int(y)))
+                    else:
+                        a = np.random.randint(20, 235, 3)
+                        b = np.random.randint(20, 235, 3)
+                        grad = np.linspace(0, 1, max(1, bh))[:, None, None]
+                        block = (a * (1 - grad) + b * grad)
+                        block = np.repeat(block, max(1, x1 - x0), axis=1)
+                        block += np.random.normal(0, 12, block.shape)
+                        img.paste(Image.fromarray(
+                            np.clip(block, 0, 255).astype(np.uint8)),
+                            (int(x0), int(y)))
+                    y += bh + s
+                else:
+                    y = _text_lines(d, m, y, w - m,
+                                    y + s * random.randint(3, 10), s, ink) + s
     elif kind == 'note':
         _scribble(d, m, m, w - m, h - m, random.choice([(20, 40, 140),
                                                         (20, 20, 20)]),
