@@ -2,24 +2,24 @@
  "minutes": 320,
  "configs": [
   {
-   "name": "m2",
+   "name": "m3",
    "widths": "24,32,48,80,128",
    "dec": 48,
    "minutes": 320,
-   "resume": "runs/3/m/best.pt",
-   "lr": 0.0007,
-   "hard": 0.5,
-   "real_frac": 0.35
+   "resume": "runs/7/m2/best.pt",
+   "lr": 0.0005,
+   "hard": 0.4,
+   "real_frac": 0.45
   },
   {
-   "name": "s4",
+   "name": "s5",
    "widths": "16,24,40,64,96",
    "dec": 32,
    "minutes": 320,
    "resume": "runs/4/s2/best.pt",
    "lr": 0.0005,
    "hard": 0.35,
-   "real_frac": 0.4
+   "real_frac": 0.45
   }
  ]
 }

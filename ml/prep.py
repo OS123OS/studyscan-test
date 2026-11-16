@@ -2,7 +2,8 @@
 
 1. Texturen für Untergründe: CC0 (ambientCG, Poly Haven).
 2. Echte Fotos: SmartDoc 2015 Challenge 1 (CC BY 4.0, Burie et al., ICDAR
-   2015). Hintergründe 1-3 zum Üben, 4-5 nur zum Prüfen.
+   2015). Hintergründe 1-4 zum Üben, 5 (weißes Blatt auf hellem, vollem
+   Schreibtisch) nur zum Prüfen.
 """
 
 from __future__ import annotations
@@ -140,7 +141,8 @@ def textures_polyhaven(out, limit=80, seconds=TEXTURE_SECONDS / 2):
     return _deadline_pool([job(k) for k in keys], seconds)
 
 
-def smartdoc(train_dir, eval_dir, train_step=4, eval_step=5, long_side=384):
+def smartdoc(train_dir, eval_dir, train_step=3, eval_step=5, long_side=384,
+             train_bgs=4):
     os.makedirs(train_dir, exist_ok=True)
     os.makedirs(eval_dir, exist_ok=True)
     tmp = 'frames.tar.gz'
@@ -157,9 +159,9 @@ def smartdoc(train_dir, eval_dir, train_step=4, eval_step=5, long_side=384):
     for r in meta:
         bg = int(r['bg_name'][-2:])
         idx = int(r['frame_index'])
-        if bg <= 3 and idx % train_step == 0:
+        if bg <= train_bgs and idx % train_step == 0:
             rows[r['image_path']] = ('train', r)
-        elif bg >= 4 and idx % eval_step == 0:
+        elif bg > train_bgs and idx % eval_step == 0:
             rows[r['image_path']] = ('eval', r)
     labels = {'train': {}, 'eval': {}}
     with tarfile.open(tmp, 'r:gz') as tar:
