@@ -56,11 +56,21 @@ jobs:
             npm install --no-audit --no-fund playwright@1.49.1 > /dev/null
             npx playwright install --with-deps chromium > /dev/null
             half=$(( N / 2 ))
-            STUDIO_SCALE=0.4 STUDIO_SECONDS=1500 node render.js ../../data/studio 100000 $((100000 + half)) 0 > ../../data/studio_a.log 2>&1 &
-            STUDIO_SCALE=0.4 STUDIO_SECONDS=1500 node render.js ../../data/studio $((100000 + half)) $((100000 + N)) 0 > ../../data/studio_b.log 2>&1 &
+            SEC=$(jq -r '.studio_seconds // 1500' ../../ml/RUN.json)
+            CARDS=$(jq -r '.studio_cards // 0' ../../ml/RUN.json)
+            TABLETS=$(jq -r '.studio_tablets // 0' ../../ml/RUN.json)
+            STUDIO_SCALE=0.4 STUDIO_SECONDS=$SEC node render.js ../../data/studio 100000 $((100000 + half)) 0 > ../../data/studio_a.log 2>&1 &
+            STUDIO_SCALE=0.4 STUDIO_SECONDS=$SEC node render.js ../../data/studio $((100000 + half)) $((100000 + N)) 0 > ../../data/studio_b.log 2>&1 &
+            # Ausweiskarten und Tablets (Bildschirm als Blatt), eigene Seeds
+            if [ "$CARDS" -gt 0 ]; then
+              STUDIO_DEVICE=card STUDIO_SCALE=0.4 STUDIO_SECONDS=$SEC node render.js ../../data/studio 200000 $((200000 + CARDS)) 0 > ../../data/studio_c.log 2>&1 &
+            fi
+            if [ "$TABLETS" -gt 0 ]; then
+              STUDIO_DEVICE=tablet STUDIO_SCALE=0.4 STUDIO_SECONDS=$SEC node render.js ../../data/studio 300000 $((300000 + TABLETS)) 0 > ../../data/studio_d.log 2>&1 &
+            fi
             wait
             cd ../..
-            tail -n 2 data/studio_a.log data/studio_b.log | tee -a data/prep_log.txt
+            tail -n 2 data/studio_*.log | tee -a data/prep_log.txt
             python ml/studio/to_real.py data/studio data/real_train 2>&1 | tee -a data/prep_log.txt
             rm -rf data/studio
           fi

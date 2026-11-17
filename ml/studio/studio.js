@@ -244,6 +244,33 @@ function renderPage(kind, pw, ph) {
   return c;
 }
 
+/** Ausweis/Karte: farbiger Verlauf, Foto, Schrift. */
+function renderCard(pw, ph) {
+  const c = document.createElement('canvas');
+  c.width = pw; c.height = ph;
+  const g = c.getContext('2d');
+  const h0 = rint(0, 360);
+  const grad = g.createLinearGradient(0, 0, pw, ph);
+  grad.addColorStop(0, `hsl(${h0},${rint(20, 70)}%,${rint(55, 92)}%)`);
+  grad.addColorStop(1, `hsl(${(h0 + rint(-60, 60) + 360) % 360},${rint(20, 70)}%,${rint(40, 85)}%)`);
+  g.fillStyle = grad; g.fillRect(0, 0, pw, ph);
+  const u = pw / 100;
+  if (chance(0.7)) { g.fillStyle = `hsl(${h0},60%,${rint(20, 45)}%)`; g.fillRect(0, 0, pw, ph * rnd(0.12, 0.22)); }
+  const portrait = chance(0.8);
+  if (portrait) {
+    g.fillStyle = `hsl(${rint(0, 40)},${rint(10, 40)}%,${rint(25, 70)}%)`;
+    g.fillRect(pw * 0.06, ph * 0.3, pw * 0.25, ph * 0.6);
+    g.fillStyle = `hsl(${rint(15, 35)},40%,${rint(45, 80)}%)`;
+    g.beginPath(); g.ellipse(pw * 0.185, ph * 0.5, pw * 0.07, ph * 0.12, 0, 0, 7); g.fill();
+  }
+  g.fillStyle = `rgba(20,20,30,${rnd(0.6, 0.95)})`;
+  g.font = `bold ${Math.round(u * 6)}px sans-serif`;
+  g.fillText(pick(['SCHÜLERAUSWEIS', 'STUDENT ID', 'Bibliothek', 'Mitgliedskarte', 'Ausweis']), pw * 0.06, ph * 0.13 + u * 2);
+  g.font = `${Math.round(u * 4)}px sans-serif`;
+  for (let i = 0; i < rint(3, 6); i++) g.fillText(pick(['Name', 'Klasse 7b', 'gültig bis 2027', 'Nr. 482913', 'Gymnasium', 'Max Muster']), pw * (portrait ? 0.36 : 0.06), ph * (0.36 + i * 0.12));
+  return c;
+}
+
 const SHEETS = [ // Name, Breite × Höhe in cm
   ['A4', 21, 29.7, 60], ['A5', 14.8, 21, 12], ['Letter', 21.6, 27.9, 8],
   ['Heft', 16.5, 21, 8], ['Karteikarte', 14.8, 10.5, 4], ['Kassenzettel', 8, 22, 3],
@@ -536,12 +563,16 @@ function renderScene(seed, W, H, opts = {}) {
   let sw = sw0, sh = sh0;
   if (chance(0.15)) [sw, sh] = [sh, sw];
   const rot = rnd(-Math.PI, Math.PI);
-  const kind = sw0 === 8 ? 'receipt' : weighted(KINDS);
+  // Statt Blatt: Ausweiskarte oder Tablet/Handy mit Seite auf dem Bildschirm.
+  const device = nodoc ? null : (opts.device ?? null);
+  if (device === 'card') { [sw, sh] = chance(0.5) ? [8.56, 5.4] : [5.4, 8.56]; }
+  if (device === 'tablet') { [sw, sh] = pick([[15, 20], [17.4, 24.8], [19.7, 26.2], [6.8, 14.8]]); if (chance(0.4)) [sw, sh] = [sh, sw]; }
+  const kind = device ?? (sw0 === 8 ? 'receipt' : weighted(KINDS));
   const pageTex = (k, w, h) => { const px = 1100; const c = renderPage(k, Math.round(px * Math.min(1, w / h)), Math.round(px * Math.min(1, h / w))); const t = textureFrom(gl, c); cleanup.push(t); return t; };
 
   // Stapel darunter (oft gleiches Papier): das Schwerste
   let y = 0.0;
-  const stack = !nodoc && chance(0.35) ? rint(1, 6) : 0;
+  const stack = !nodoc && !device && chance(0.35) ? rint(1, 6) : 0;
   const under = [];
   for (let i = 0; i < stack; i++) {
     const same = chance(0.6);
@@ -553,7 +584,13 @@ function renderScene(seed, W, H, opts = {}) {
     under.push([ux, uz]);
   }
   // Bücher oder Mappe darunter
-  if (!nodoc && stack === 0 && chance(0.12)) {
+  if (device === 'tablet') {
+    // Gehäuse mit dunklem Rand, darauf der Bildschirm (Glas glänzt).
+    const b = rnd(0.5, 1.6), th = rnd(0.6, 1.0);
+    add(boxMesh([0, y + th / 2, 0], [sw + 2 * b, th, sh + 2 * b], rot), { kind: 1, c1: chance(0.7) ? [0.04, 0.04, 0.05] : hsl(0, 0, rnd(70, 90)), gloss: 0.6 });
+    y += th - 0.04;
+  }
+  if (!nodoc && !device && stack === 0 && chance(0.12)) {
     const bh = rnd(1, 4);
     add(boxMesh([rnd(-2, 2), bh / 2, rnd(-2, 2)], [sw * rnd(1.05, 1.3), bh, sh * rnd(1.05, 1.2)], rot + rnd(-0.2, 0.2)),
       { kind: 1, c1: hsl(rint(0, 360), rint(30, 70), rnd(20, 60)), gloss: 0.2 });
@@ -563,8 +600,15 @@ function renderScene(seed, W, H, opts = {}) {
   // Das oberste Blatt
   let corners = null;
   const bend = bendFunction();
-  const top = placeSheet(sw, sh, 0, 0, rot, y + 0.06, bend);
-  if (!nodoc) {
+  const top = placeSheet(sw, sh, 0, 0, rot, y + 0.06, device ? () => 0 : bend);
+  if (device === 'card') {
+    const t = textureFrom(gl, renderCard(Math.round(700 * Math.min(1, sw / sh)), Math.round(700 * Math.min(1, sh / sw)))); cleanup.push(t);
+    add(sheetMesh(top, 8, 8), { kind: 0, tex: t, gloss: rnd(0.2, 0.7) });
+    corners = [top(0, 0), top(1, 0), top(1, 1), top(0, 1)];
+  } else if (device === 'tablet') {
+    add(sheetMesh(top, 8, 8), { kind: 0, tex: pageTex(pick(['slides', 'text', 'worksheet', 'magazine']), sw, sh), gloss: rnd(0.5, 0.9) });
+    corners = [top(0, 0), top(1, 0), top(1, 1), top(0, 1)];
+  } else if (!nodoc) {
     add(sheetMesh(top), { kind: 0, tex: pageTex(kind, sw, sh), gloss: chance(0.2) ? rnd(0.2, 0.7) : 0.03 });
     corners = [top(0, 0), top(1, 0), top(1, 1), top(0, 1)];
   }
@@ -580,7 +624,9 @@ function renderScene(seed, W, H, opts = {}) {
   };
   const nThings = rint(0, nodoc ? 6 : 5);
   for (let i = 0; i < nThings; i++) {
-    const t = weighted([['book', 3], ['pen', 4], ['mug', 2], ['phone', 2], ['laptop', 1], ['paper', 3], ['sticky', 1]]);
+    // Ohne Blatt: keine losen Blätter (die wären ja wieder ein Blatt). Bei
+    // der Karte auch nicht: Liegt sie auf einem Blatt, wäre das Blatt gemeint.
+    const t = weighted([['book', 3], ['pen', 4], ['mug', 2], ['phone', 2], ['laptop', 1], ...(nodoc ? [] : device === 'card' ? [['sticky', 1]] : [['paper', 3], ['sticky', 1]])]);
     if (t === 'book') {
       const bw = rnd(13, 24), bl = bw * rnd(1.2, 1.5), bh = rnd(1, 4), r = rnd(0, 6.3);
       const [x, z] = free(Math.hypot(bw, bl) / 2);

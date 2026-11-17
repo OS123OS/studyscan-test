@@ -20,7 +20,7 @@ const fs = require('fs'), path = require('path');
       .map((v) => Math.round(v * scale));
     const nodoc = ((i * 2654435761) % 1000) / 1000 < nodocShare;
     const t0 = Date.now();
-    const r = await page.evaluate(([s, w, h, nd]) => window.renderScene(s, w, h, { nodoc: nd }), [i, ar[0], ar[1], nodoc]);
+    const r = await page.evaluate(([s, w, h, nd, dev]) => window.renderScene(s, w, h, { nodoc: nd, device: dev }), [i, ar[0], ar[1], nodoc, process.env.STUDIO_DEVICE || null]);
     if (!r) { console.log(i, 'übersprungen'); continue; }
     const name = `gl${String(i).padStart(4, '0')}`;
     fs.writeFileSync(path.join(out, name + '.png'), Buffer.from(r.png.split(',')[1], 'base64'));

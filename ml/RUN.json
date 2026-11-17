@@ -1,25 +1,28 @@
 {
  "minutes": 320,
  "studio": 4000,
+ "studio_cards": 2000,
+ "studio_tablets": 2000,
+ "studio_seconds": 2400,
  "configs": [
   {
-   "name": "m7",
+   "name": "m8",
    "widths": "24,32,48,80,128",
    "dec": 48,
    "minutes": 320,
-   "resume": "runs/9/m5/best.pt",
-   "lr": 0.0004,
+   "resume": "runs/11/m7/best.pt",
+   "lr": 0.0003,
    "hard": 0.4,
    "real_frac": 0.5,
    "zoom": 0.35
   },
   {
-   "name": "s7",
+   "name": "s8",
    "widths": "16,24,40,64,96",
    "dec": 32,
    "minutes": 320,
-   "resume": "runs/4/s2/best.pt",
-   "lr": 0.0005,
+   "resume": "runs/10/s6/best.pt",
+   "lr": 0.0004,
    "hard": 0.4,
    "real_frac": 0.5
   }
