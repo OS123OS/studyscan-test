@@ -46935,17 +46935,19 @@ _.a=a
 _.b=b
 _.c=c
 _.d=d},
-ctV(a,b,c){var s,r,q,p,o,n=null,m=null
-if(b<1||c<1||a.length<b*c*4)return null
+ctV(a,b,c){var s,r,q,p,o,n,m=null,l=null,k=null
+if(b<1||c<1||a.length<b*c*4)return m
 s=null
-try{s=A.cvK(m,n,a,b,c)}catch(r){}q=s
-q=q==null?null:q.a
-p=s
-if(p==null)p=null
-else p=p.b>0.93&&p.c>0.9&&p.d>0.9
-o=A.c4v(a,b,c,q,p===!0)
-if(o!=null&&s!=null&&n!=null&&Math.max(b,c)>320&&A.cww(o,s.a,b,c)<0.9)$.bMV().j(0,o,s.a)
-return A.cvQ(o,s)},
+try{s=A.cvK(k,l,a,b,c)
+r=l!=null&&Math.max(b,c)>320?l:k
+if(s==null&&r!=null)return m}catch(q){}p=s
+p=p==null?m:p.a
+o=s
+if(o==null)o=m
+else o=o.b>0.93&&o.c>0.9&&o.d>0.9
+n=A.c4v(a,b,c,p,o===!0)
+if(n!=null&&s!=null&&l!=null&&Math.max(b,c)>320&&A.cww(n,s.a,b,c)<0.9)$.bMV().j(0,n,s.a)
+return A.cvQ(n,s)},
 cvK(a,b,c,d,e){return null},
 cvQ(a,b){var s
 if(a!=null)return a
@@ -160099,7 +160101,7 @@ var $async$FU=A.h(function(b,c){if(b===1)return A.i(c,r)
 for(;;)switch(s){case 0:s=3
 return A.c(A.aBw(),$async$FU)
 case 3:o=c
-if(p.c==null||o==null||o==="20261117151617"){s=1
+if(p.c==null||o==null||o==="20261117154918"){s=1
 break}if(a&&A.c53(o,!1)){s=1
 break}p.K(new A.bDo(p,o))
 case 1:return A.j(q,r)}})
@@ -175827,7 +175829,7 @@ n=t.p
 return A.by(m,A.aN(A.a([o,B.c1,A.b3(A.aE(A.a([p,B.hc,A.G(k,m,m,m,m,A.a1(m,m,l.w,m,m,m,m,m,m,m,m,13,m,m,m,m,m,!0,m,m,m,m,m,m,m,m),m,m,m)],n),B.Y,B.f,B.h,m),1)],n),B.m,B.f,B.h,0,m),B.p,m,m,new A.b7(l.b,m,r,q,m,m,B.E),m,m,m,B.eB,m,m,m)}}
 A.aon.prototype={
 A(a){var s=null,r=A.aF(a),q=t.p,p=A.a([A.oH(A.d8(B.ag7,s,s,s,s,s,s,s,s,s,"StudyScan"),s,s,A.a1(s,s,r.f,s,s,s,s,s,"Instrument Serif",s,s,22,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),s)],q)
-B.c.F(p,A.a([B.cb,A.G("Version vom 17.11.2026 16:16",s,s,s,s,A.a1(s,s,r.w,s,s,s,s,s,s,s,s,12,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),s,s,s)],q))
+B.c.F(p,A.a([B.cb,A.G("Version vom 17.11.2026 16:49",s,s,s,s,A.a1(s,s,r.w,s,s,s,s,s,s,s,s,12,s,s,s,s,s,!0,s,s,s,s,s,s,s,s),s,s,s)],q))
 return A.aE(p,B.m,B.f,B.h,s)}}
 A.ac8.prototype={
 i4(a,b){var s,r,q=null,p=b.X($.An(),t.ux).gq()

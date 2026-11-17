@@ -2629,18 +2629,20 @@ eg:function eg(a,b,c){this.a=a
 this.b=b
 this.c=c},
 eh:function eh(a){this.a=a},
-jK(a,b,c,d,e){var s,r,q,p,o
-if(b<1||c<1||a.length<b*c*4)return null
+jK(a,b,c,d,e){var s,r,q,p,o,n,m=null
+if(b<1||c<1||a.length<b*c*4)return m
 s=null
-try{s=A.jZ(e,d,a,b,c)}catch(r){}q=s
-q=q==null?null:q.a
-p=s
-if(p==null)p=null
-else p=p.b>0.93&&p.c>0.9&&p.d>0.9
-o=A.jJ(a,b,c,q,p===!0)
-if(o!=null&&s!=null&&d!=null&&Math.max(b,c)>320&&A.k4(o,s.a,b,c)<0.9){q=$.eT()
-p=s.a
-q.a.set(o,p)}return A.k_(o,s)},
+try{s=A.jZ(e,d,a,b,c)
+r=d!=null&&Math.max(b,c)>320?d:e
+if(s==null&&r!=null)return m}catch(q){}p=s
+p=p==null?m:p.a
+o=s
+if(o==null)o=m
+else o=o.b>0.93&&o.c>0.9&&o.d>0.9
+n=A.jJ(a,b,c,p,o===!0)
+if(n!=null&&s!=null&&d!=null&&Math.max(b,c)>320&&A.k4(n,s.a,b,c)<0.9){p=$.eT()
+o=s.a
+p.a.set(n,o)}return A.k_(n,s)},
 jZ(a,b,c,d,e){if(b!=null&&Math.max(d,e)>320)return A.eK(b,c,d,e,!0)
 return a==null?null:A.eK(a,c,d,e,!1)},
 k_(a,b){var s
