@@ -82,6 +82,7 @@ jobs:
         working-directory: ml
         env:
           SYNTH_HARD: ${{ matrix.cfg.hard || '0' }}
+          SYNTH_ZOOM: ${{ matrix.cfg.zoom || '0' }}
         run: |
           set -o pipefail
           mkdir -p ../out

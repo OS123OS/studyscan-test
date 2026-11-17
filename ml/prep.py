@@ -141,7 +141,7 @@ def textures_polyhaven(out, limit=80, seconds=TEXTURE_SECONDS / 2):
     return _deadline_pool([job(k) for k in keys], seconds)
 
 
-def smartdoc(train_dir, eval_dir, train_step=3, eval_step=5, long_side=384,
+def smartdoc(train_dir, eval_dir, train_step=3, eval_step=5, long_side=640,
              train_bgs=4):
     os.makedirs(train_dir, exist_ok=True)
     os.makedirs(eval_dir, exist_ok=True)

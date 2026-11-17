@@ -119,8 +119,20 @@ def augment_real(path, corners):
     img = Image.open(path).convert('RGB')
     W, H = img.size
     q = corners * np.array([W, H])
-    # Zufälliger Ausschnitt, Blatt bleibt größtenteils drin.
-    for _ in range(10):
+    zoomed = random.random() < float(os.environ.get('SYNTH_ZOOM', '0'))
+    if zoomed:
+        # Ausschnitt wie beim zweiten Blick der App (zoomCrop): Rechteck ums
+        # Blatt mit Rand, etwas verschoben.
+        lo, hi = q.min(0), q.max(0)
+        size = hi - lo
+        m = random.uniform(0.06, 0.3)
+        jit = np.random.uniform(-0.05, 0.05, 2) * size
+        a = np.maximum(lo - m * size + jit, 0)
+        b = np.minimum(hi + m * size + jit, [W, H])
+        x0, y0 = a
+        cw, ch = b - a
+        qq = q - a
+    for _ in range(0 if zoomed else 10):
         s = random.uniform(0.6, 1.0)
         cw, ch = W * s * random.uniform(0.85, 1.0), H * s
         x0, y0 = random.uniform(0, W - cw), random.uniform(0, H - ch)
@@ -130,7 +142,8 @@ def augment_real(path, corners):
         if inside >= 3:
             break
     else:
-        x0, y0, cw, ch, qq = 0, 0, W, H, q
+        if not zoomed:
+            x0, y0, cw, ch, qq = 0, 0, W, H, q
     img = img.crop((int(x0), int(y0), int(x0 + cw), int(y0 + ch)))
     q = qq / [cw, ch]
     # Drehen/Spiegeln (Handy hoch oder quer).

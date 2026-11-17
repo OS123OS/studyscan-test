@@ -468,18 +468,24 @@ def _homography(src, dst):
     return np.append(h, 1).reshape(3, 3)
 
 
-def _random_quad(W, H, aspect, cut_ok):
-    """Vier Ecken (im Uhrzeigersinn ab links oben) im Bild WxH."""
+def _random_quad(W, H, aspect, cut_ok, zoom=False):
+    """Vier Ecken (im Uhrzeigersinn ab links oben) im Bild WxH.
+
+    zoom: Blatt groß und mittig, wie im Ausschnitt beim zweiten Blick der
+    App (zoomCrop: Rechteck ums Blatt mit 15 % Rand)."""
     for _ in range(50):
         area = random.uniform(0.12, 0.85) if random.random() < 0.85 else \
             random.uniform(0.85, 1.0)
+        if zoom:
+            area = random.uniform(0.3, 0.62)
         # Rechteck mit Seitenverhältnis aspect (h/w) und Fläche area*W*H.
         bw = math.sqrt(area * W * H / aspect)
         bh = bw * aspect
         ang = random.gauss(0, 0.25) if random.random() < 0.75 else \
             random.uniform(-math.pi, math.pi)
-        cx = W / 2 + random.uniform(-0.25, 0.25) * W
-        cy = H / 2 + random.uniform(-0.25, 0.25) * H
+        off = 0.06 if zoom else 0.25
+        cx = W / 2 + random.uniform(-off, off) * W
+        cy = H / 2 + random.uniform(-off, off) * H
         c, s = math.cos(ang), math.sin(ang)
         pts = []
         for dx, dy in ((-bw / 2, -bh / 2), (bw / 2, -bh / 2), (bw / 2, bh / 2),
@@ -641,15 +647,36 @@ def _light_background(w: int, h: int) -> Image.Image:
     return Image.fromarray(np.clip(arr, 0, 255).astype(np.uint8))
 
 
-def _stack_below(bg: Image.Image, quad, new_page, W, H):
+def _blank_like(page: Image.Image) -> Image.Image:
+    """Leeres Blatt (Rückseite, Schmierpapier) fast in der Papierfarbe von
+    page: auf einem Stapel ist die Kante des obersten Blatts dann kaum zu
+    sehen (wie auf SmartDoc Hintergrund 5)."""
+    arr = np.asarray(page.convert('RGB')).astype(np.float32)
+    colour = np.median(arr[:4].reshape(-1, 3), 0)
+    colour = colour + np.random.uniform(-7, 5, 3) + random.uniform(-8, 3)
+    h, w = arr.shape[:2]
+    out = np.ones((h, w, 3), np.float32) * colour
+    out += (_noise(h, w, random.uniform(2, 6))[..., None] - 0.5) * 4
+    return Image.fromarray(np.clip(out, 0, 255).astype(np.uint8))
+
+
+def _stack_below(bg: Image.Image, quad, new_page, W, H, top=None):
     """Weitere Blätter unter dem Hauptblatt, leicht verschoben (Stapel,
-    Heft). Zur Maske gehört nur das oberste Blatt."""
-    for _ in range(random.randint(1, 2)):
-        page = new_page()
+    Heft), oft leer. Zur Maske gehört nur das oberste Blatt."""
+    size = np.ptp(quad, 0)
+    for _ in range(random.randint(1, 3)):
+        blank = top is not None and random.random() < 0.6
+        page = _blank_like(top) if blank else new_page()
         c = quad.mean(0)
-        ang = random.gauss(0, 0.08)
-        scale = random.uniform(0.95, 1.08)
-        shift = np.random.uniform(-0.08, 0.08, 2) * np.array([W, H])
+        if random.random() < 0.7:
+            # Wenig verschoben, gemessen an der Blattgröße.
+            ang = random.gauss(0, 0.05)
+            scale = random.uniform(0.97, 1.05)
+            shift = np.random.uniform(-0.1, 0.1, 2) * size
+        else:
+            ang = random.gauss(0, 0.08)
+            scale = random.uniform(0.95, 1.08)
+            shift = np.random.uniform(-0.08, 0.08, 2) * np.array([W, H])
         cs, sn = math.cos(ang), math.sin(ang)
         rel = (quad - c) * scale
         q = np.stack([rel[:, 0] * cs - rel[:, 1] * sn,
@@ -724,6 +751,9 @@ class Generator:
         # ohne neue Parameter setzen kann.
         self.hard = float(os.environ.get('SYNTH_HARD', '0')) \
             if hard is None else hard
+        # Anteil der Bilder wie beim zweiten Blick der App (Blatt groß und
+        # mittig, oft auf einem Stapel).
+        self.zoom = float(os.environ.get('SYNTH_ZOOM', '0'))
 
     def _page(self):
         if len(self.pool) < self.pool_size or random.random() < 0.05:
@@ -759,14 +789,17 @@ class Generator:
             bg = tex or procedural_background(W // 2, H // 2).resize(
                 (W, H), Image.BILINEAR)
         quad = None
+        zoom = random.random() < self.zoom
         if not no_doc:
             page = self._page()
             aspect = page.size[1] / page.size[0]
-            quad = _random_quad(W, H, aspect, cut_ok=random.random() < 0.2)
+            quad = _random_quad(W, H, aspect, cut_ok=random.random() < 0.2,
+                                zoom=zoom)
         if quad is not None:
             _clutter(bg, quad)
-            if hard and random.random() < 0.4:
-                _stack_below(bg, quad, self._page, W, H)
+            if (zoom and random.random() < 0.5) or \
+                    (hard and random.random() < 0.4):
+                _stack_below(bg, quad, self._page, W, H, top=page)
             bend = random.uniform(0, 0.02) if random.random() < 0.3 else 0
             layer = _warp_page(page, quad, W, H, bend)
             # Leichter Schlagschatten unter dem Blatt (Papierdicke).
