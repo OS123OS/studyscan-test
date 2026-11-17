@@ -1,26 +1,27 @@
 {
  "minutes": 320,
+ "studio": 4000,
  "configs": [
   {
-   "name": "m6z",
+   "name": "m7",
    "widths": "24,32,48,80,128",
    "dec": 48,
    "minutes": 320,
    "resume": "runs/9/m5/best.pt",
    "lr": 0.0004,
    "hard": 0.4,
-   "real_frac": 0.45,
-   "zoom": 0.9
+   "real_frac": 0.5,
+   "zoom": 0.35
   },
   {
-   "name": "s6",
+   "name": "s7",
    "widths": "16,24,40,64,96",
    "dec": 32,
    "minutes": 320,
    "resume": "runs/4/s2/best.pt",
    "lr": 0.0005,
    "hard": 0.4,
-   "real_frac": 0.45
+   "real_frac": 0.5
   }
  ]
 }

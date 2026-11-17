@@ -44,6 +44,26 @@ jobs:
           python ml/prep.py textures data/textures 2>&1 | tee -a data/prep_log.txt
       - name: SmartDoc 2015 (CC BY 4.0)
         run: python ml/prep.py smartdoc data/real_train data/real_eval 2>&1 | tee -a data/prep_log.txt
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: 3D-Fotostudio (eigene Fotos, ml/studio)
+        run: |
+          N=$(jq -r '.studio // 0' ml/RUN.json)
+          if [ "$N" -gt 0 ]; then
+            cd ml/studio
+            npm init -y > /dev/null
+            npm install --no-audit --no-fund playwright@1.49.1 > /dev/null
+            npx playwright install --with-deps chromium > /dev/null
+            half=$(( N / 2 ))
+            STUDIO_SCALE=0.4 STUDIO_SECONDS=1500 node render.js ../../data/studio 100000 $((100000 + half)) 0 > ../../data/studio_a.log 2>&1 &
+            STUDIO_SCALE=0.4 STUDIO_SECONDS=1500 node render.js ../../data/studio $((100000 + half)) $((100000 + N)) 0 > ../../data/studio_b.log 2>&1 &
+            wait
+            cd ../..
+            tail -n 2 data/studio_a.log data/studio_b.log | tee -a data/prep_log.txt
+            python ml/studio/to_real.py data/studio data/real_train 2>&1 | tee -a data/prep_log.txt
+            rm -rf data/studio
+          fi
       - run: |
           { du -sh data/*; ls data/textures | wc -l; } 2>&1 | tee -a data/prep_log.txt
       - uses: actions/upload-artifact@v4
