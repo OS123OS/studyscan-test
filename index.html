@@ -38,6 +38,15 @@
     <div>StudyScan wird geladen …</div>
   </div>
   <noscript>Bitte JavaScript einschalten, damit StudyScan läuft.</noscript>
-  <script src="flutter_bootstrap.js?v=20261117105519" async></script>
+  <script>
+    // „Teilen“ an StudyScan (installiert auf Android): nimmt geteilte Fotos
+    // an, siehe teilen_sw.js. Speichert sonst nichts zwischen.
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', function () {
+        navigator.serviceWorker.register('teilen_sw.js').catch(function () {});
+      });
+    }
+  </script>
+  <script src="flutter_bootstrap.js?v=20261117141546" async></script>
 </body>
 </html>
