@@ -271,6 +271,57 @@ function renderCard(pw, ph) {
   return c;
 }
 
+/** Bildschirm-Inhalt: Folie, Fenster, Code oder Webseite (auch dunkel). */
+function renderScreen(pw, ph) {
+  const c = document.createElement('canvas');
+  c.width = pw; c.height = ph;
+  const g = c.getContext('2d');
+  const u = Math.max(pw, ph) / 100;
+  const mode = weighted([['slide', 4], ['window', 3], ['code', 2], ['web', 3]]);
+  const dark = mode === 'code' || chance(0.2);
+  const bg = dark ? `hsl(${rint(200, 240)},${rint(5, 20)}%,${rint(8, 18)}%)` : chance(0.7) ? '#fdfdfd' : `hsl(${rint(0, 360)},${rint(20, 60)}%,${rint(85, 95)}%)`;
+  const fg = dark ? `hsl(0,0%,${rint(80, 95)}%)` : '#202124';
+  g.fillStyle = bg; g.fillRect(0, 0, pw, ph);
+  const accent = `hsl(${rint(0, 360)},${rint(40, 80)}%,${rint(30, 55)}%)`;
+  if (mode === 'slide') {
+    if (chance(0.5)) { g.fillStyle = accent; g.fillRect(0, 0, pw, ph * rnd(0.12, 0.2)); }
+    g.fillStyle = chance(0.5) ? fg : accent; g.font = `bold ${u * rnd(4, 6)}px "${pick(FONTS_SANS)}"`;
+    g.fillText(words(rint(2, 5)), u * 5, ph * 0.1 + u * 3);
+    const img = chance(0.4);
+    for (let i = 0, y = ph * 0.3; i < rint(3, 6) && y < ph * 0.9; i++, y += u * rnd(5, 7)) {
+      g.fillStyle = accent; g.fillRect(u * 6, y - u * 1.6, u * 1.2, u * 1.2);
+      g.fillStyle = fg; g.font = `${u * rnd(2.4, 3.2)}px "${pick(FONTS_SANS)}"`;
+      g.fillText(words(rint(3, 7)), u * 9, y);
+    }
+    if (img) photoBlock(g, pw * 0.6, ph * 0.3, pw * 0.33, ph * 0.5);
+  } else if (mode === 'window') {
+    const grd = g.createLinearGradient(0, 0, pw, ph);
+    grd.addColorStop(0, `hsl(${rint(0, 360)},50%,${rint(20, 60)}%)`); grd.addColorStop(1, `hsl(${rint(0, 360)},50%,${rint(20, 60)}%)`);
+    g.fillStyle = grd; g.fillRect(0, 0, pw, ph);
+    const x0 = pw * rnd(0, 0.15), y0 = ph * rnd(0, 0.1), x1 = pw * rnd(0.75, 1), y1 = ph * rnd(0.8, 0.93);
+    g.fillStyle = dark ? '#2b2b2b' : '#e8e8e8'; g.fillRect(x0, y0, x1 - x0, u * 3);
+    g.fillStyle = bg; g.fillRect(x0, y0 + u * 3, x1 - x0, y1 - y0 - u * 3);
+    textBlock(g, x0 + u * 3, y0 + u * 6, x1 - u * 3, y1 - u * 2, u * rnd(1.4, 2), pick(FONTS_SANS), fg);
+    g.fillStyle = dark ? '#111' : '#d0d0d0'; g.fillRect(0, ph - u * 4, pw, u * 4); // Taskleiste
+  } else if (mode === 'code') {
+    g.fillStyle = 'rgba(255,255,255,0.04)'; g.fillRect(0, 0, pw * rnd(0.12, 0.22), ph);
+    const cols = ['#9cdcfe', '#ce9178', '#c586c0', '#dcdcaa', '#6a9955', '#d4d4d4', '#569cd6'];
+    const sz = u * rnd(1.2, 1.8); g.font = `${sz}px "${pick(FONTS_MONO)}"`;
+    for (let y = sz * 2, ind = 0; y < ph - sz; y += sz * 1.45) {
+      ind = Math.max(0, Math.min(6, ind + rint(-1, 1)));
+      let x = pw * 0.24 + ind * sz * 1.2;
+      for (let k = 0; k < rint(1, 5); k++) { const w = pick(WORDS); g.fillStyle = pick(cols); g.fillText(w, x, y); x += g.measureText(w + ' ').width; }
+    }
+  } else {
+    g.fillStyle = accent; g.fillRect(0, 0, pw, u * rnd(5, 8));
+    g.fillStyle = '#fff'; g.font = `bold ${u * 2.5}px "${pick(FONTS_SANS)}"`; g.fillText(words(2), u * 3, u * 4);
+    const cw = pw * rnd(0.55, 0.7);
+    textBlock(g, u * 4, u * 12, cw, ph - u * 3, u * rnd(1.4, 2), pick(chance(0.5) ? FONTS_SERIF : FONTS_SANS), fg);
+    if (chance(0.7)) photoBlock(g, cw + u * 3, u * 12, pw - cw - u * 6, ph * rnd(0.2, 0.4));
+  }
+  return c;
+}
+
 const SHEETS = [ // Name, Breite × Höhe in cm
   ['A4', 21, 29.7, 60], ['A5', 14.8, 21, 12], ['Letter', 21.6, 27.9, 8],
   ['Heft', 16.5, 21, 8], ['Karteikarte', 14.8, 10.5, 4], ['Kassenzettel', 8, 22, 3],
@@ -382,7 +433,7 @@ in vec3 vPos; in vec3 vNrm; in vec2 vUv; in vec4 vLight;
 uniform sampler2D uTex; uniform sampler2DShadow uShadow;
 uniform int uKind; uniform int uPattern; uniform vec3 uC1; uniform vec3 uC2; uniform float uScale; uniform float uRot;
 uniform float uGloss; uniform vec3 uLightDir; uniform vec3 uLightCol; uniform vec3 uAmb; uniform vec3 uEye;
-uniform float uSoft; uniform vec4 uBlob; uniform vec4 uLamp; uniform float uTexel;
+uniform float uSoft; uniform vec4 uBlob; uniform vec4 uLamp; uniform float uTexel; uniform float uEmit;
 out vec4 frag;
 float h21(vec2 p){ p=fract(p*vec2(123.34,456.21)); p+=dot(p,p+45.32); return fract(p.x*p.y); }
 float vnoise(vec2 p){ vec2 i=floor(p), f=fract(p); f=f*f*(3.-2.*f);
@@ -421,6 +472,7 @@ void main(){
   float d=max(dot(n,l),0.);
   vec3 h=normalize(l+v); float sp=pow(max(dot(n,h),0.), mix(8.,90.,uGloss))*uGloss;
   vec3 col=base*(uAmb + uLightCol*d*sh) + uLightCol*sp*sh*.8;
+  if(uEmit>0.) col=base*uEmit + uLightCol*sp*sh*.8;                       // Bildschirm leuchtet selbst
   if(uLamp.w>0.){ vec3 L=uLamp.xyz-vPos; float dist=length(L); col+=base*uLamp.w*max(dot(n,L/dist),0.)*2000./(dist*dist); }
   float b=length(vPos.xz-uBlob.xy)/uBlob.z; col*=1.-uBlob.w*(1.-smoothstep(.6,1.,b));    // Schatten des Fotografen
   frag=vec4(col,1.);
@@ -466,7 +518,7 @@ function setup(W, H) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, null);
   GL = { gl, prog, dprog, depth, fbo, SM, W, H, loc: {} };
   for (const n of ['uVP', 'uLightVP', 'uTex', 'uShadow', 'uKind', 'uPattern', 'uC1', 'uC2', 'uScale', 'uRot', 'uGloss',
-    'uLightDir', 'uLightCol', 'uAmb', 'uEye', 'uSoft', 'uBlob', 'uLamp', 'uTexel']) GL.loc[n] = gl.getUniformLocation(prog, n);
+    'uLightDir', 'uLightCol', 'uAmb', 'uEye', 'uSoft', 'uBlob', 'uLamp', 'uTexel', 'uEmit']) GL.loc[n] = gl.getUniformLocation(prog, n);
   GL.dloc = gl.getUniformLocation(dprog, 'uLightVP');
   return GL;
 }
@@ -567,6 +619,7 @@ function renderScene(seed, W, H, opts = {}) {
   const device = nodoc ? null : (opts.device ?? null);
   if (device === 'card') { [sw, sh] = chance(0.5) ? [8.56, 5.4] : [5.4, 8.56]; }
   if (device === 'tablet') { [sw, sh] = pick([[15, 20], [17.4, 24.8], [19.7, 26.2], [6.8, 14.8]]); if (chance(0.4)) [sw, sh] = [sh, sw]; }
+  if (device === 'monitor') { [sw, sh] = pick([[34.5, 19.4], [30.4, 19], [53, 29.8], [47.5, 29.7], [60, 33.8]]); if (chance(0.1)) [sw, sh] = [sh, sw]; }
   const kind = device ?? (sw0 === 8 ? 'receipt' : weighted(KINDS));
   const pageTex = (k, w, h) => { const px = 1100; const c = renderPage(k, Math.round(px * Math.min(1, w / h)), Math.round(px * Math.min(1, h / w))); const t = textureFrom(gl, c); cleanup.push(t); return t; };
 
@@ -584,6 +637,19 @@ function renderScene(seed, W, H, opts = {}) {
     under.push([ux, uz]);
   }
   // Bücher oder Mappe darunter
+  // Monitor/Laptop/Beamer: Gehäuse (oder beim Beamer nur helle Wand), Laptop-Tastatur an einer Kante.
+  const beamer = device === 'monitor' && chance(0.2);
+  if (device === 'monitor' && beamer) {
+    objs[0].pattern = 0; const v = rnd(0.55, 0.9); objs[0].c1 = [v, v, v * rnd(0.95, 1.02)]; objs[0].c2 = V.mul(objs[0].c1, rnd(0.9, 1));
+  } else if (device === 'monitor') {
+    const b = rnd(0.3, 2.5), th = rnd(0.8, 2.5);
+    add(boxMesh([0, y + th / 2, 0], [sw + 2 * b, th, sh + 2 * b], rot), { kind: 1, c1: chance(0.75) ? [0.03, 0.03, 0.04] : hsl(0, 0, rnd(55, 85)), gloss: rnd(0.3, 0.8) });
+    if (chance(0.35)) { // Laptop: Tastatur an der unteren Kante, aufgeklappt flach gedacht
+      const cs = Math.cos(rot), sn = Math.sin(rot), off = sh / 2 + b + sh * 0.5;
+      add(boxMesh([-sn * off, 0.8, cs * off], [sw + 2 * b, 1.6, sh * 0.95], rot), { kind: 4, c1: hsl(0, 0, rnd(55, 80)), c2: [0.08, 0.08, 0.09], gloss: 0.3 });
+    }
+    y += th - 0.04;
+  }
   if (device === 'tablet') {
     // Gehäuse mit dunklem Rand, darauf der Bildschirm (Glas glänzt).
     const b = rnd(0.5, 1.6), th = rnd(0.6, 1.0);
@@ -606,7 +672,11 @@ function renderScene(seed, W, H, opts = {}) {
     add(sheetMesh(top, 8, 8), { kind: 0, tex: t, gloss: rnd(0.2, 0.7) });
     corners = [top(0, 0), top(1, 0), top(1, 1), top(0, 1)];
   } else if (device === 'tablet') {
-    add(sheetMesh(top, 8, 8), { kind: 0, tex: pageTex(pick(['slides', 'text', 'worksheet', 'magazine']), sw, sh), gloss: rnd(0.5, 0.9) });
+    add(sheetMesh(top, 8, 8), { kind: 0, tex: pageTex(pick(['slides', 'text', 'worksheet', 'magazine']), sw, sh), gloss: rnd(0.5, 0.9), emit: chance(0.7) ? rnd(0.75, 1.1) : 0 });
+    corners = [top(0, 0), top(1, 0), top(1, 1), top(0, 1)];
+  } else if (device === 'monitor') {
+    const t = textureFrom(gl, renderScreen(Math.round(1200 * Math.min(1, sw / sh)), Math.round(1200 * Math.min(1, sh / sw)))); cleanup.push(t);
+    add(sheetMesh(top, 8, 8), { kind: 0, tex: t, gloss: beamer ? 0 : rnd(0.2, 0.9), emit: beamer ? rnd(0.75, 1.0) : rnd(0.7, 1.15) });
     corners = [top(0, 0), top(1, 0), top(1, 1), top(0, 1)];
   } else if (!nodoc) {
     add(sheetMesh(top), { kind: 0, tex: pageTex(kind, sw, sh), gloss: chance(0.2) ? rnd(0.2, 0.7) : 0.03 });
@@ -748,7 +818,7 @@ function renderScene(seed, W, H, opts = {}) {
     gl.uniform1i(loc.uKind, o.kind);
     gl.uniform1i(loc.uPattern, o.pattern ?? 0);
     gl.uniform3fv(loc.uC1, o.c1 ?? [1, 1, 1]); gl.uniform3fv(loc.uC2, o.c2 ?? [0, 0, 0]);
-    gl.uniform1f(loc.uScale, o.scale ?? 1); gl.uniform1f(loc.uRot, o.rot ?? 0); gl.uniform1f(loc.uGloss, o.gloss ?? 0);
+    gl.uniform1f(loc.uScale, o.scale ?? 1); gl.uniform1f(loc.uRot, o.rot ?? 0); gl.uniform1f(loc.uGloss, o.gloss ?? 0); gl.uniform1f(loc.uEmit, o.emit ?? 0);
     if (o.tex) { gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, o.tex); }
     gl.bindVertexArray(o.m.vao); gl.drawElements(gl.TRIANGLES, o.m.count, gl.UNSIGNED_INT, 0);
   });

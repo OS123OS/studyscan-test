@@ -1,8 +1,9 @@
 {
  "minutes": 320,
  "studio": 4000,
- "studio_cards": 2000,
- "studio_tablets": 2000,
+ "studio_cards": 1500,
+ "studio_tablets": 1500,
+ "studio_monitors": 1500,
  "studio_seconds": 2400,
  "configs": [
   {

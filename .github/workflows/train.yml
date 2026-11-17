@@ -59,6 +59,7 @@ jobs:
             SEC=$(jq -r '.studio_seconds // 1500' ../../ml/RUN.json)
             CARDS=$(jq -r '.studio_cards // 0' ../../ml/RUN.json)
             TABLETS=$(jq -r '.studio_tablets // 0' ../../ml/RUN.json)
+            MONITORS=$(jq -r '.studio_monitors // 0' ../../ml/RUN.json)
             STUDIO_SCALE=0.4 STUDIO_SECONDS=$SEC node render.js ../../data/studio 100000 $((100000 + half)) 0 > ../../data/studio_a.log 2>&1 &
             STUDIO_SCALE=0.4 STUDIO_SECONDS=$SEC node render.js ../../data/studio $((100000 + half)) $((100000 + N)) 0 > ../../data/studio_b.log 2>&1 &
             # Ausweiskarten und Tablets (Bildschirm als Blatt), eigene Seeds
@@ -67,6 +68,10 @@ jobs:
             fi
             if [ "$TABLETS" -gt 0 ]; then
               STUDIO_DEVICE=tablet STUDIO_SCALE=0.4 STUDIO_SECONDS=$SEC node render.js ../../data/studio 300000 $((300000 + TABLETS)) 0 > ../../data/studio_d.log 2>&1 &
+            fi
+            # Monitore, Laptops und Beamer-Folien (leuchtender Bildschirm als Blatt)
+            if [ "$MONITORS" -gt 0 ]; then
+              STUDIO_DEVICE=monitor STUDIO_SCALE=0.4 STUDIO_SECONDS=$SEC node render.js ../../data/studio 400000 $((400000 + MONITORS)) 0 > ../../data/studio_e.log 2>&1 &
             fi
             wait
             cd ../..
