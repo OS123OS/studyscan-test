@@ -1,0 +1,180 @@
+/home/runner/work/studyscan-test/studyscan-test/ml/train.py:357: FutureWarning: You are using `torch.load` with `weights_only=False` (the current default value), which uses the default pickle module implicitly. It is possible to construct malicious pickle data which will execute arbitrary code during unpickling (See https://github.com/pytorch/pytorch/blob/main/SECURITY.md#untrusted-models for more details). In a future release, the default value for `weights_only` will be flipped to `True`. This limits the functions that could be executed during unpickling. Arbitrary objects will no longer be allowed to be loaded via this mode unless they are explicitly allowlisted by the user via `torch.serialization.add_safe_globals`. We recommend you start setting `weights_only=True` for any use case where you don't have full control of the loaded file. Please open an issue on GitHub for any issues related to this experimental feature.
+  net.load_state_dict(torch.load(args.resume))
+weiter mit ../init.pt
+Parameter 119818, MACs 76.2 M
+/home/runner/work/studyscan-test/studyscan-test/ml/train.py:100: UserWarning: The given NumPy array is not writable, and PyTorch does not support non-writable tensors. This means writing to this tensor will result in undefined behavior. You may want to copy the array to protect its data or make it writable before converting it to a tensor. This type of warning will be suppressed for the rest of this program. (Triggered internally at ../torch/csrc/utils/tensor_numpy.cpp:206.)
+  x = torch.from_numpy(img_u8).float().permute(2, 0, 1) / 255.0 - 0.5
+Export-Probe ok, Prüfung {"mean_iou": 0.954784582212858, "ok90": 0.875, "ok95": 0.875, "n": 8}
+echte Trainingsfotos: 7395
+Prüfbilder: synthetisch 300, echt 503
+   2.2 min  Schritt 100  Bilder 3200  Verlust 0.1294  lr 0.00019  24/s
+   4.3 min  Schritt 200  Bilder 6400  Verlust 0.0944  lr 0.00036  25/s
+   6.4 min  Schritt 300  Bilder 9600  Verlust 0.0992  lr 0.00050  25/s
+   8.5 min  Schritt 400  Bilder 12800  Verlust 0.0955  lr 0.00050  25/s
+  10.5 min  Schritt 500  Bilder 16000  Verlust 0.0830  lr 0.00050  25/s
+  12.6 min  Schritt 600  Bilder 19200  Verlust 0.0806  lr 0.00050  25/s
+  14.7 min  Schritt 700  Bilder 22400  Verlust 0.1190  lr 0.00050  25/s
+  16.8 min  Schritt 800  Bilder 25600  Verlust 0.1100  lr 0.00050  25/s
+  18.9 min  Schritt 900  Bilder 28800  Verlust 0.1015  lr 0.00050  25/s
+PRÜFUNG synthetisch {"mean_iou": 0.9359207959885297, "ok90": 0.7733333333333333, "ok95": 0.6466666666666666, "n": 300} echt {"mean_iou": 0.8070571047278533, "ok90": 0.02186878727634195, "ok95": 0.0, "n": 503}
+  21.4 min  Schritt 1000  Bilder 32000  Verlust 0.1077  lr 0.00049  25/s
+  23.4 min  Schritt 1100  Bilder 35200  Verlust 0.1587  lr 0.00049  25/s
+  25.5 min  Schritt 1200  Bilder 38400  Verlust 0.0881  lr 0.00049  25/s
+  27.5 min  Schritt 1300  Bilder 41600  Verlust 0.0754  lr 0.00049  25/s
+  29.6 min  Schritt 1400  Bilder 44800  Verlust 0.0768  lr 0.00049  25/s
+  31.6 min  Schritt 1500  Bilder 48000  Verlust 0.1104  lr 0.00049  25/s
+  33.6 min  Schritt 1600  Bilder 51200  Verlust 0.0948  lr 0.00049  25/s
+  35.6 min  Schritt 1700  Bilder 54400  Verlust 0.0727  lr 0.00048  25/s
+  37.7 min  Schritt 1800  Bilder 57600  Verlust 0.0837  lr 0.00048  25/s
+  39.8 min  Schritt 1900  Bilder 60800  Verlust 0.1054  lr 0.00048  25/s
+PRÜFUNG synthetisch {"mean_iou": 0.9405583812515325, "ok90": 0.78, "ok95": 0.6666666666666666, "n": 300} echt {"mean_iou": 0.8056572281059815, "ok90": 0.013916500994035786, "ok95": 0.0, "n": 503}
+  42.1 min  Schritt 2000  Bilder 64000  Verlust 0.0920  lr 0.00048  25/s
+  44.1 min  Schritt 2100  Bilder 67200  Verlust 0.0968  lr 0.00048  25/s
+  46.2 min  Schritt 2200  Bilder 70400  Verlust 0.0812  lr 0.00047  25/s
+  48.2 min  Schritt 2300  Bilder 73600  Verlust 0.1025  lr 0.00047  25/s
+  50.2 min  Schritt 2400  Bilder 76800  Verlust 0.0783  lr 0.00047  26/s
+  52.2 min  Schritt 2500  Bilder 80000  Verlust 0.1012  lr 0.00047  26/s
+  54.2 min  Schritt 2600  Bilder 83200  Verlust 0.0835  lr 0.00047  26/s
+  56.2 min  Schritt 2700  Bilder 86400  Verlust 0.0923  lr 0.00046  26/s
+  58.2 min  Schritt 2800  Bilder 89600  Verlust 0.1394  lr 0.00046  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9387311751102506, "ok90": 0.7833333333333333, "ok95": 0.6433333333333333, "n": 300} echt {"mean_iou": 0.7866769117618598, "ok90": 0.015904572564612324, "ok95": 0.0, "n": 503}
+  60.6 min  Schritt 2900  Bilder 92800  Verlust 0.0768  lr 0.00046  26/s
+  62.6 min  Schritt 3000  Bilder 96000  Verlust 0.1057  lr 0.00045  26/s
+  64.6 min  Schritt 3100  Bilder 99200  Verlust 0.0897  lr 0.00045  26/s
+  66.6 min  Schritt 3200  Bilder 102400  Verlust 0.0889  lr 0.00045  26/s
+  68.6 min  Schritt 3300  Bilder 105600  Verlust 0.1054  lr 0.00045  26/s
+  70.6 min  Schritt 3400  Bilder 108800  Verlust 0.0834  lr 0.00044  26/s
+  72.6 min  Schritt 3500  Bilder 112000  Verlust 0.1006  lr 0.00044  26/s
+  74.6 min  Schritt 3600  Bilder 115200  Verlust 0.1266  lr 0.00044  26/s
+  76.6 min  Schritt 3700  Bilder 118400  Verlust 0.0808  lr 0.00043  26/s
+  78.6 min  Schritt 3800  Bilder 121600  Verlust 0.0861  lr 0.00043  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9390255827609592, "ok90": 0.79, "ok95": 0.6533333333333333, "n": 300} echt {"mean_iou": 0.8057275707637059, "ok90": 0.02186878727634195, "ok95": 0.0, "n": 503}
+  80.9 min  Schritt 3900  Bilder 124800  Verlust 0.0633  lr 0.00043  26/s
+  82.9 min  Schritt 4000  Bilder 128000  Verlust 0.0805  lr 0.00042  26/s
+  85.0 min  Schritt 4100  Bilder 131200  Verlust 0.0958  lr 0.00042  26/s
+  87.0 min  Schritt 4200  Bilder 134400  Verlust 0.1037  lr 0.00041  26/s
+  89.1 min  Schritt 4300  Bilder 137600  Verlust 0.1310  lr 0.00041  26/s
+  91.1 min  Schritt 4400  Bilder 140800  Verlust 0.0875  lr 0.00041  26/s
+  93.1 min  Schritt 4500  Bilder 144000  Verlust 0.0994  lr 0.00040  26/s
+  95.2 min  Schritt 4600  Bilder 147200  Verlust 0.0920  lr 0.00040  26/s
+  97.2 min  Schritt 4700  Bilder 150400  Verlust 0.0920  lr 0.00039  26/s
+  99.2 min  Schritt 4800  Bilder 153600  Verlust 0.1729  lr 0.00039  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9410152672424899, "ok90": 0.79, "ok95": 0.6733333333333333, "n": 300} echt {"mean_iou": 0.7951757685190419, "ok90": 0.015904572564612324, "ok95": 0.0, "n": 503}
+ 101.6 min  Schritt 4900  Bilder 156800  Verlust 0.1042  lr 0.00039  26/s
+ 103.7 min  Schritt 5000  Bilder 160000  Verlust 0.0988  lr 0.00038  26/s
+ 105.7 min  Schritt 5100  Bilder 163200  Verlust 0.0877  lr 0.00038  26/s
+ 107.7 min  Schritt 5200  Bilder 166400  Verlust 0.0847  lr 0.00037  26/s
+ 109.8 min  Schritt 5300  Bilder 169600  Verlust 0.0973  lr 0.00037  26/s
+ 111.8 min  Schritt 5400  Bilder 172800  Verlust 0.1002  lr 0.00036  26/s
+ 113.8 min  Schritt 5500  Bilder 176000  Verlust 0.0771  lr 0.00036  26/s
+ 115.8 min  Schritt 5600  Bilder 179200  Verlust 0.1024  lr 0.00036  26/s
+ 117.9 min  Schritt 5700  Bilder 182400  Verlust 0.0930  lr 0.00035  26/s
+ 119.9 min  Schritt 5800  Bilder 185600  Verlust 0.1878  lr 0.00035  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9379402885349797, "ok90": 0.79, "ok95": 0.6666666666666666, "n": 300} echt {"mean_iou": 0.8174734775260982, "ok90": 0.02584493041749503, "ok95": 0.0, "n": 503}
+ 122.2 min  Schritt 5900  Bilder 188800  Verlust 0.0872  lr 0.00034  26/s
+ 124.3 min  Schritt 6000  Bilder 192000  Verlust 0.0806  lr 0.00034  26/s
+ 126.3 min  Schritt 6100  Bilder 195200  Verlust 0.0881  lr 0.00033  26/s
+ 128.3 min  Schritt 6200  Bilder 198400  Verlust 0.0943  lr 0.00033  26/s
+ 130.4 min  Schritt 6300  Bilder 201600  Verlust 0.0877  lr 0.00032  26/s
+ 132.4 min  Schritt 6400  Bilder 204800  Verlust 0.0842  lr 0.00032  26/s
+ 134.5 min  Schritt 6500  Bilder 208000  Verlust 0.1129  lr 0.00031  26/s
+ 136.5 min  Schritt 6600  Bilder 211200  Verlust 0.1203  lr 0.00031  26/s
+ 138.5 min  Schritt 6700  Bilder 214400  Verlust 0.0920  lr 0.00030  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9384746933640686, "ok90": 0.7966666666666666, "ok95": 0.6366666666666667, "n": 300} echt {"mean_iou": 0.8121186044198676, "ok90": 0.019880715705765408, "ok95": 0.0, "n": 503}
+ 140.9 min  Schritt 6800  Bilder 217600  Verlust 0.0938  lr 0.00030  26/s
+ 143.0 min  Schritt 6900  Bilder 220800  Verlust 0.0882  lr 0.00029  26/s
+ 145.1 min  Schritt 7000  Bilder 224000  Verlust 0.1665  lr 0.00029  26/s
+ 147.1 min  Schritt 7100  Bilder 227200  Verlust 0.0875  lr 0.00028  26/s
+ 149.2 min  Schritt 7200  Bilder 230400  Verlust 0.0828  lr 0.00028  26/s
+ 151.3 min  Schritt 7300  Bilder 233600  Verlust 0.1072  lr 0.00027  26/s
+ 153.3 min  Schritt 7400  Bilder 236800  Verlust 0.1301  lr 0.00027  26/s
+ 155.4 min  Schritt 7500  Bilder 240000  Verlust 0.0795  lr 0.00026  26/s
+ 157.5 min  Schritt 7600  Bilder 243200  Verlust 0.0801  lr 0.00026  26/s
+ 159.6 min  Schritt 7700  Bilder 246400  Verlust 0.0934  lr 0.00025  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9372821866159756, "ok90": 0.78, "ok95": 0.65, "n": 300} echt {"mean_iou": 0.8074043225822346, "ok90": 0.017892644135188866, "ok95": 0.0, "n": 503}
+ 162.0 min  Schritt 7800  Bilder 249600  Verlust 0.1046  lr 0.00025  26/s
+ 164.1 min  Schritt 7900  Bilder 252800  Verlust 0.0932  lr 0.00024  26/s
+ 166.1 min  Schritt 8000  Bilder 256000  Verlust 0.0765  lr 0.00023  26/s
+ 168.2 min  Schritt 8100  Bilder 259200  Verlust 0.1014  lr 0.00023  26/s
+ 170.3 min  Schritt 8200  Bilder 262400  Verlust 0.1224  lr 0.00022  26/s
+ 172.3 min  Schritt 8300  Bilder 265600  Verlust 0.1166  lr 0.00022  26/s
+ 174.4 min  Schritt 8400  Bilder 268800  Verlust 0.0898  lr 0.00021  26/s
+ 176.4 min  Schritt 8500  Bilder 272000  Verlust 0.0917  lr 0.00021  26/s
+ 178.5 min  Schritt 8600  Bilder 275200  Verlust 0.1068  lr 0.00020  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9391335025142852, "ok90": 0.78, "ok95": 0.64, "n": 300} echt {"mean_iou": 0.816547728490997, "ok90": 0.02186878727634195, "ok95": 0.0, "n": 503}
+ 180.8 min  Schritt 8700  Bilder 278400  Verlust 0.0933  lr 0.00020  26/s
+ 182.9 min  Schritt 8800  Bilder 281600  Verlust 0.1109  lr 0.00019  26/s
+ 184.9 min  Schritt 8900  Bilder 284800  Verlust 0.0957  lr 0.00019  26/s
+ 186.9 min  Schritt 9000  Bilder 288000  Verlust 0.0775  lr 0.00018  26/s
+ 189.0 min  Schritt 9100  Bilder 291200  Verlust 0.0981  lr 0.00018  26/s
+ 191.0 min  Schritt 9200  Bilder 294400  Verlust 0.0891  lr 0.00018  26/s
+ 193.1 min  Schritt 9300  Bilder 297600  Verlust 0.0734  lr 0.00017  26/s
+ 195.1 min  Schritt 9400  Bilder 300800  Verlust 0.1135  lr 0.00017  26/s
+ 197.2 min  Schritt 9500  Bilder 304000  Verlust 0.1284  lr 0.00016  26/s
+ 199.2 min  Schritt 9600  Bilder 307200  Verlust 0.0928  lr 0.00016  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9383639418784621, "ok90": 0.7966666666666666, "ok95": 0.64, "n": 300} echt {"mean_iou": 0.7990587832166995, "ok90": 0.007952286282306162, "ok95": 0.0, "n": 503}
+ 201.6 min  Schritt 9700  Bilder 310400  Verlust 0.0818  lr 0.00015  26/s
+ 203.7 min  Schritt 9800  Bilder 313600  Verlust 0.0998  lr 0.00015  26/s
+ 205.8 min  Schritt 9900  Bilder 316800  Verlust 0.0798  lr 0.00014  26/s
+ 207.8 min  Schritt 10000  Bilder 320000  Verlust 0.0864  lr 0.00014  26/s
+ 209.9 min  Schritt 10100  Bilder 323200  Verlust 0.0845  lr 0.00013  26/s
+ 211.9 min  Schritt 10200  Bilder 326400  Verlust 0.0780  lr 0.00013  26/s
+ 213.9 min  Schritt 10300  Bilder 329600  Verlust 0.0897  lr 0.00012  26/s
+ 216.0 min  Schritt 10400  Bilder 332800  Verlust 0.0776  lr 0.00012  26/s
+ 218.0 min  Schritt 10500  Bilder 336000  Verlust 0.1040  lr 0.00012  26/s
+ 219.9 min  Schritt 10600  Bilder 339200  Verlust 0.1172  lr 0.00011  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9385926209490807, "ok90": 0.7833333333333333, "ok95": 0.64, "n": 300} echt {"mean_iou": 0.8160888170796387, "ok90": 0.027833001988071572, "ok95": 0.0, "n": 503}
+ 222.2 min  Schritt 10700  Bilder 342400  Verlust 0.1249  lr 0.00011  26/s
+ 224.2 min  Schritt 10800  Bilder 345600  Verlust 0.1044  lr 0.00010  26/s
+ 226.3 min  Schritt 10900  Bilder 348800  Verlust 0.0835  lr 0.00010  26/s
+ 228.3 min  Schritt 11000  Bilder 352000  Verlust 0.0689  lr 0.00009  26/s
+ 230.4 min  Schritt 11100  Bilder 355200  Verlust 0.1227  lr 0.00009  26/s
+ 232.4 min  Schritt 11200  Bilder 358400  Verlust 0.1213  lr 0.00009  26/s
+ 234.4 min  Schritt 11300  Bilder 361600  Verlust 0.2069  lr 0.00008  26/s
+ 236.4 min  Schritt 11400  Bilder 364800  Verlust 0.0818  lr 0.00008  26/s
+ 238.5 min  Schritt 11500  Bilder 368000  Verlust 0.0864  lr 0.00008  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9368008399679469, "ok90": 0.7966666666666666, "ok95": 0.6466666666666666, "n": 300} echt {"mean_iou": 0.8165576706632341, "ok90": 0.02186878727634195, "ok95": 0.0, "n": 503}
+ 240.7 min  Schritt 11600  Bilder 371200  Verlust 0.1259  lr 0.00007  26/s
+ 242.7 min  Schritt 11700  Bilder 374400  Verlust 0.0992  lr 0.00007  26/s
+ 244.8 min  Schritt 11800  Bilder 377600  Verlust 0.0777  lr 0.00007  26/s
+ 246.8 min  Schritt 11900  Bilder 380800  Verlust 0.1264  lr 0.00006  26/s
+ 248.8 min  Schritt 12000  Bilder 384000  Verlust 0.1819  lr 0.00006  26/s
+ 250.8 min  Schritt 12100  Bilder 387200  Verlust 0.0793  lr 0.00006  26/s
+ 252.9 min  Schritt 12200  Bilder 390400  Verlust 0.1170  lr 0.00005  26/s
+ 254.9 min  Schritt 12300  Bilder 393600  Verlust 0.0891  lr 0.00005  26/s
+ 256.8 min  Schritt 12400  Bilder 396800  Verlust 0.0864  lr 0.00005  26/s
+ 258.8 min  Schritt 12500  Bilder 400000  Verlust 0.1103  lr 0.00004  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9373620548040816, "ok90": 0.79, "ok95": 0.65, "n": 300} echt {"mean_iou": 0.8213950867604328, "ok90": 0.015904572564612324, "ok95": 0.0, "n": 503}
+ 261.1 min  Schritt 12600  Bilder 403200  Verlust 0.1908  lr 0.00004  26/s
+ 263.1 min  Schritt 12700  Bilder 406400  Verlust 0.1195  lr 0.00004  26/s
+ 265.1 min  Schritt 12800  Bilder 409600  Verlust 0.1134  lr 0.00004  26/s
+ 267.1 min  Schritt 12900  Bilder 412800  Verlust 0.0962  lr 0.00003  26/s
+ 269.1 min  Schritt 13000  Bilder 416000  Verlust 0.0895  lr 0.00003  26/s
+ 271.1 min  Schritt 13100  Bilder 419200  Verlust 0.0999  lr 0.00003  26/s
+ 273.1 min  Schritt 13200  Bilder 422400  Verlust 0.1180  lr 0.00003  26/s
+ 275.1 min  Schritt 13300  Bilder 425600  Verlust 0.0920  lr 0.00002  26/s
+ 277.2 min  Schritt 13400  Bilder 428800  Verlust 0.1093  lr 0.00002  26/s
+ 279.1 min  Schritt 13500  Bilder 432000  Verlust 0.0830  lr 0.00002  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9384248245419464, "ok90": 0.7933333333333333, "ok95": 0.65, "n": 300} echt {"mean_iou": 0.8206093006206439, "ok90": 0.02186878727634195, "ok95": 0.0, "n": 503}
+ 281.4 min  Schritt 13600  Bilder 435200  Verlust 0.0901  lr 0.00002  26/s
+ 283.5 min  Schritt 13700  Bilder 438400  Verlust 0.1047  lr 0.00002  26/s
+ 285.5 min  Schritt 13800  Bilder 441600  Verlust 0.0802  lr 0.00001  26/s
+ 287.5 min  Schritt 13900  Bilder 444800  Verlust 0.0864  lr 0.00001  26/s
+ 289.5 min  Schritt 14000  Bilder 448000  Verlust 0.0854  lr 0.00001  26/s
+ 291.5 min  Schritt 14100  Bilder 451200  Verlust 0.1063  lr 0.00001  26/s
+ 293.5 min  Schritt 14200  Bilder 454400  Verlust 0.1369  lr 0.00001  26/s
+ 295.6 min  Schritt 14300  Bilder 457600  Verlust 0.1268  lr 0.00001  26/s
+ 297.6 min  Schritt 14400  Bilder 460800  Verlust 0.1034  lr 0.00001  26/s
+ 299.6 min  Schritt 14500  Bilder 464000  Verlust 0.1063  lr 0.00001  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9375245400890191, "ok90": 0.7966666666666666, "ok95": 0.65, "n": 300} echt {"mean_iou": 0.8166774817431423, "ok90": 0.02385685884691849, "ok95": 0.0, "n": 503}
+ 301.9 min  Schritt 14600  Bilder 467200  Verlust 0.0777  lr 0.00000  26/s
+ 303.9 min  Schritt 14700  Bilder 470400  Verlust 0.0919  lr 0.00000  26/s
+ 305.9 min  Schritt 14800  Bilder 473600  Verlust 0.0920  lr 0.00000  26/s
+ 307.9 min  Schritt 14900  Bilder 476800  Verlust 0.0915  lr 0.00000  26/s
+ 310.0 min  Schritt 15000  Bilder 480000  Verlust 0.0919  lr 0.00000  26/s
+ 312.0 min  Schritt 15100  Bilder 483200  Verlust 0.1238  lr 0.00000  26/s
+ 314.1 min  Schritt 15200  Bilder 486400  Verlust 0.0717  lr 0.00000  26/s
+ 316.1 min  Schritt 15300  Bilder 489600  Verlust 0.0995  lr 0.00000  26/s
+ 318.1 min  Schritt 15400  Bilder 492800  Verlust 0.1257  lr 0.00000  26/s
+PRÜFUNG synthetisch {"mean_iou": 0.9389490513286893, "ok90": 0.7966666666666666, "ok95": 0.6366666666666667, "n": 300} echt {"mean_iou": 0.8173289475747914, "ok90": 0.019880715705765408, "ok95": 0.0, "n": 503}
+fertig
