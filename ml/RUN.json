@@ -1,31 +1,32 @@
 {
  "minutes": 320,
  "studio": 4000,
- "studio_cards": 1500,
- "studio_tablets": 1500,
- "studio_monitors": 1500,
+ "studio_cards": 800,
+ "studio_tablets": 800,
+ "studio_monitors": 1000,
  "studio_seconds": 2400,
  "configs": [
   {
-   "name": "m8",
+   "name": "m9",
    "widths": "24,32,48,80,128",
    "dec": 48,
    "minutes": 320,
-   "resume": "runs/11/m7/best.pt",
-   "lr": 0.0003,
+   "resume": "runs/13/m8/best.pt",
+   "lr": 0.0002,
    "hard": 0.4,
-   "real_frac": 0.5,
-   "zoom": 0.35
+   "real_frac": 0.55,
+   "zoom": 0.5
   },
   {
-   "name": "s8",
+   "name": "s9",
    "widths": "16,24,40,64,96",
    "dec": 32,
    "minutes": 320,
-   "resume": "runs/10/s6/best.pt",
-   "lr": 0.0004,
+   "resume": "runs/13/s8/best.pt",
+   "lr": 0.0002,
    "hard": 0.4,
-   "real_frac": 0.5
+   "real_frac": 0.55
   }
- ]
+ ],
+ "studio_seed_offset": 20000
 }
