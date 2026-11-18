@@ -7,26 +7,27 @@
  "studio_seconds": 2400,
  "configs": [
   {
-   "name": "m9",
+   "name": "z10",
    "widths": "24,32,48,80,128",
    "dec": 48,
    "minutes": 320,
-   "resume": "runs/13/m8/best.pt",
+   "resume": "runs/11/m7/best.pt",
    "lr": 0.0002,
    "hard": 0.4,
    "real_frac": 0.55,
-   "zoom": 0.5
+   "zoom": 1.0
   },
   {
-   "name": "s9",
+   "name": "s10",
    "widths": "16,24,40,64,96",
    "dec": 32,
    "minutes": 320,
-   "resume": "runs/13/s8/best.pt",
-   "lr": 0.0002,
+   "resume": "runs/14/s9/best.pt",
+   "lr": 0.00015,
    "hard": 0.4,
-   "real_frac": 0.55
+   "real_frac": 0.6,
+   "nodoc": 0.1
   }
  ],
- "studio_seed_offset": 20000
+ "studio_seed_offset": 40000
 }

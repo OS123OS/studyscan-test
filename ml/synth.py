@@ -754,6 +754,8 @@ class Generator:
         # Anteil der Bilder wie beim zweiten Blick der App (Blatt groß und
         # mittig, oft auf einem Stapel).
         self.zoom = float(os.environ.get('SYNTH_ZOOM', '0'))
+        # Anteil künstlicher Bilder ganz ohne Blatt (leerer Tisch).
+        self.no_doc = float(os.environ.get('SYNTH_NODOC', '0.04'))
 
     def _page(self):
         if len(self.pool) < self.pool_size or random.random() < 0.05:
@@ -779,7 +781,7 @@ class Generator:
         base = int(self.size * self.render)
         W = int(base * (ar if ar > 1 else 1) * random.uniform(1.0, 1.2))
         H = int(W / ar)
-        no_doc = random.random() < 0.04
+        no_doc = random.random() < self.no_doc
         hard = random.random() < self.hard
         white = hard and random.random() < 0.45
         if white:
