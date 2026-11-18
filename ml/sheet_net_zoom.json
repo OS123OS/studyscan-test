@@ -1,0 +1,562 @@
+{
+ "input": 192,
+ "output": 96,
+ "widths": [
+  24,
+  32,
+  48,
+  80,
+  128
+ ],
+ "dec": 48,
+ "layers": [
+  {
+   "name": "stem",
+   "kind": "conv3",
+   "stride": 2,
+   "relu": true,
+   "cin": 3,
+   "cout": 24,
+   "shape": [
+    24,
+    3,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "s1.0.dw",
+   "kind": "dw",
+   "stride": 1,
+   "relu": true,
+   "cin": 24,
+   "cout": 24,
+   "shape": [
+    24,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "s1.0.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": false,
+   "cin": 24,
+   "cout": 24,
+   "shape": [
+    24,
+    24,
+    1,
+    1
+   ],
+   "res": true
+  },
+  {
+   "name": "s2.0.dw",
+   "kind": "dw",
+   "stride": 2,
+   "relu": true,
+   "cin": 24,
+   "cout": 24,
+   "shape": [
+    24,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "s2.0.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": true,
+   "cin": 24,
+   "cout": 32,
+   "shape": [
+    32,
+    24,
+    1,
+    1
+   ],
+   "res": false
+  },
+  {
+   "name": "s2.1.dw",
+   "kind": "dw",
+   "stride": 1,
+   "relu": true,
+   "cin": 32,
+   "cout": 32,
+   "shape": [
+    32,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "s2.1.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": false,
+   "cin": 32,
+   "cout": 32,
+   "shape": [
+    32,
+    32,
+    1,
+    1
+   ],
+   "res": true
+  },
+  {
+   "name": "s3.0.dw",
+   "kind": "dw",
+   "stride": 2,
+   "relu": true,
+   "cin": 32,
+   "cout": 32,
+   "shape": [
+    32,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "s3.0.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": true,
+   "cin": 32,
+   "cout": 48,
+   "shape": [
+    48,
+    32,
+    1,
+    1
+   ],
+   "res": false
+  },
+  {
+   "name": "s3.1.dw",
+   "kind": "dw",
+   "stride": 1,
+   "relu": true,
+   "cin": 48,
+   "cout": 48,
+   "shape": [
+    48,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "s3.1.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": false,
+   "cin": 48,
+   "cout": 48,
+   "shape": [
+    48,
+    48,
+    1,
+    1
+   ],
+   "res": true
+  },
+  {
+   "name": "s4.0.dw",
+   "kind": "dw",
+   "stride": 2,
+   "relu": true,
+   "cin": 48,
+   "cout": 48,
+   "shape": [
+    48,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "s4.0.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": true,
+   "cin": 48,
+   "cout": 80,
+   "shape": [
+    80,
+    48,
+    1,
+    1
+   ],
+   "res": false
+  },
+  {
+   "name": "s4.1.dw",
+   "kind": "dw",
+   "stride": 1,
+   "relu": true,
+   "cin": 80,
+   "cout": 80,
+   "shape": [
+    80,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "s4.1.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": false,
+   "cin": 80,
+   "cout": 80,
+   "shape": [
+    80,
+    80,
+    1,
+    1
+   ],
+   "res": true
+  },
+  {
+   "name": "s4.2.dw",
+   "kind": "dw",
+   "stride": 1,
+   "relu": true,
+   "cin": 80,
+   "cout": 80,
+   "shape": [
+    80,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "s4.2.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": false,
+   "cin": 80,
+   "cout": 80,
+   "shape": [
+    80,
+    80,
+    1,
+    1
+   ],
+   "res": true
+  },
+  {
+   "name": "s5.0.dw",
+   "kind": "dw",
+   "stride": 2,
+   "relu": true,
+   "cin": 80,
+   "cout": 80,
+   "shape": [
+    80,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "s5.0.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": true,
+   "cin": 80,
+   "cout": 128,
+   "shape": [
+    128,
+    80,
+    1,
+    1
+   ],
+   "res": false
+  },
+  {
+   "name": "s5.1.dw",
+   "kind": "dw",
+   "stride": 1,
+   "relu": true,
+   "cin": 128,
+   "cout": 128,
+   "shape": [
+    128,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "s5.1.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": false,
+   "cin": 128,
+   "cout": 128,
+   "shape": [
+    128,
+    128,
+    1,
+    1
+   ],
+   "res": true
+  },
+  {
+   "name": "s5.2.dw",
+   "kind": "dw",
+   "stride": 1,
+   "relu": true,
+   "cin": 128,
+   "cout": 128,
+   "shape": [
+    128,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "s5.2.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": false,
+   "cin": 128,
+   "cout": 128,
+   "shape": [
+    128,
+    128,
+    1,
+    1
+   ],
+   "res": true
+  },
+  {
+   "name": "ctx",
+   "kind": "pw",
+   "stride": 1,
+   "relu": true,
+   "cin": 128,
+   "cout": 128,
+   "shape": [
+    128,
+    128,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "l5",
+   "kind": "pw",
+   "stride": 1,
+   "relu": true,
+   "cin": 128,
+   "cout": 48,
+   "shape": [
+    48,
+    128,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "l4",
+   "kind": "pw",
+   "stride": 1,
+   "relu": true,
+   "cin": 80,
+   "cout": 48,
+   "shape": [
+    48,
+    80,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "l3",
+   "kind": "pw",
+   "stride": 1,
+   "relu": true,
+   "cin": 48,
+   "cout": 48,
+   "shape": [
+    48,
+    48,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "l2",
+   "kind": "pw",
+   "stride": 1,
+   "relu": true,
+   "cin": 32,
+   "cout": 48,
+   "shape": [
+    48,
+    32,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "l1",
+   "kind": "pw",
+   "stride": 1,
+   "relu": true,
+   "cin": 24,
+   "cout": 48,
+   "shape": [
+    48,
+    24,
+    1,
+    1
+   ]
+  },
+  {
+   "name": "d4.dw",
+   "kind": "dw",
+   "stride": 1,
+   "relu": true,
+   "cin": 48,
+   "cout": 48,
+   "shape": [
+    48,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "d4.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": false,
+   "cin": 48,
+   "cout": 48,
+   "shape": [
+    48,
+    48,
+    1,
+    1
+   ],
+   "res": true
+  },
+  {
+   "name": "d3.dw",
+   "kind": "dw",
+   "stride": 1,
+   "relu": true,
+   "cin": 48,
+   "cout": 48,
+   "shape": [
+    48,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "d3.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": false,
+   "cin": 48,
+   "cout": 48,
+   "shape": [
+    48,
+    48,
+    1,
+    1
+   ],
+   "res": true
+  },
+  {
+   "name": "d2.dw",
+   "kind": "dw",
+   "stride": 1,
+   "relu": true,
+   "cin": 48,
+   "cout": 48,
+   "shape": [
+    48,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "d2.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": false,
+   "cin": 48,
+   "cout": 48,
+   "shape": [
+    48,
+    48,
+    1,
+    1
+   ],
+   "res": true
+  },
+  {
+   "name": "d1.dw",
+   "kind": "dw",
+   "stride": 1,
+   "relu": true,
+   "cin": 48,
+   "cout": 48,
+   "shape": [
+    48,
+    1,
+    3,
+    3
+   ]
+  },
+  {
+   "name": "d1.pw",
+   "kind": "pw",
+   "stride": 1,
+   "relu": false,
+   "cin": 48,
+   "cout": 48,
+   "shape": [
+    48,
+    48,
+    1,
+    1
+   ],
+   "res": true
+  },
+  {
+   "name": "head",
+   "kind": "pw",
+   "stride": 1,
+   "relu": false,
+   "cin": 48,
+   "cout": 2,
+   "shape": [
+    2,
+    48,
+    1,
+    1
+   ]
+  }
+ ],
+ "normalize": "x/255 - 0.5"
+}
