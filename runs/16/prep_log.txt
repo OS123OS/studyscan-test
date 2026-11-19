@@ -1,0 +1,33 @@
+ambientCG Links: 94 16 s
+Texturen: ambientCG 94, Poly Haven 80
+SmartDoc (Übung, Prüfung): (7395, 503)
+==> data/studio_a.log <==
+141522 lined 0 1088 ms
+Zeit um bei 141523
+
+==> data/studio_b.log <==
+143524 lined 2 1214 ms
+Zeit um bei 143525
+
+==> data/studio_c.log <==
+240798 card 0 1050 ms
+240799 card 0 752 ms
+
+==> data/studio_d.log <==
+340798 tablet 0 2751 ms
+340799 tablet 0 2082 ms
+
+==> data/studio_e.log <==
+440998 monitor 0 785 ms
+440999 monitor 0 904 ms
+Studio-Fotos fürs Training: 5648 – echte Fotos insgesamt: 13043
+4.0K	data/prep_log.txt
+18M	data/real_eval
+473M	data/real_train
+40K	data/studio_a.log
+40K	data/studio_b.log
+24K	data/studio_c.log
+24K	data/studio_d.log
+32K	data/studio_e.log
+48M	data/textures
+174
